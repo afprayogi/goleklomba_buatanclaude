@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cari Lomba — Viewer</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef0f6; --border:#e2e5ee;
+    --text:#1c1f2b; --text-dim:#6b7080; --accent:#4f46e5; --accent-2:#7c3aed;
+    --green:#16a34a; --amber:#d97706; --red:#dc2626; --shadow:0 1px 3px rgba(20,20,40,.06),0 8px 24px rgba(20,20,40,.05);
+  }
+  [data-theme="dark"]{
+    --bg:#0f1117; --surface:#171a23; --surface-2:#1e2230; --border:#2a2f3d;
+    --text:#e9eaf0; --text-dim:#9498a8; --accent:#818cf8; --accent-2:#c084fc;
+    --green:#4ade80; --amber:#fbbf24; --red:#f87171; --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+  }
+  header{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff; padding:28px 20px 60px; position:relative; overflow:hidden;
+  }
+  header::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 85% -20%, rgba(255,255,255,.25), transparent 55%);
+  }
+  .header-inner{max-width:1100px; margin:0 auto; position:relative; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  h1{margin:0; font-size:1.6rem; display:flex; align-items:center; gap:10px;}
+  header p{margin:6px 0 0; opacity:.92; font-size:.92rem; max-width:60ch;}
+  header p.scan-note{margin-top:4px; opacity:.8; font-size:.8rem;}
+  .theme-toggle{
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:#fff;
+    border-radius:10px; padding:8px 14px; cursor:pointer; font-size:.85rem; backdrop-filter:blur(4px);
+  }
+  .theme-toggle:hover{background:rgba(255,255,255,.28);}
+
+  main{max-width:1100px; margin:-38px auto 60px; padding:0 20px;}
+
+  .panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:20px;
+  }
+  .load-row{display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .btn{
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text);
+    padding:9px 16px; border-radius:10px; cursor:pointer; font-size:.88rem; font-weight:600;
+    transition:transform .08s ease, background .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .btn.scan{background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; color:#fff;}
+  .btn.danger{color:var(--red); border-color:var(--red);}
+  .btn:disabled{opacity:.55; cursor:not-allowed; transform:none;}
+  input[type=file]{display:none;}
+  .meta-line{color:var(--text-dim); font-size:.82rem; margin-top:10px;}
+  .divider-row{display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--text-dim); font-size:.78rem;}
+  .divider-row::before, .divider-row::after{content:""; flex:1; height:1px; background:var(--border);}
+  .scan-log{
+    display:none; margin-top:10px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:10px; padding:10px 12px; font-size:.78rem; color:var(--text-dim);
+    max-height:140px; overflow-y:auto; font-family:ui-monospace,Consolas,monospace; white-space:pre-line;
+  }
+  .progress-bar{height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin-top:8px; display:none;}
+  .progress-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .2s ease;}
+
+  .filters{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
+  .filters input[type=text], .filters select{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 12px; border-radius:10px; font-size:.88rem; outline:none;
+  }
+  .filters input[type=text]{flex:1; min-width:200px;}
+
+  .stats{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+  .stat{
+    flex:1; min-width:140px; background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);
+  }
+  .stat .num{font-size:1.5rem; font-weight:700;}
+  .stat .lbl{color:var(--text-dim); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:16px 18px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+  }
+  .card-top{display:flex; justify-content:space-between; gap:8px; align-items:flex-start;}
+  .badge{
+    font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap;
+    background:var(--surface-2); color:var(--text-dim); border:1px solid var(--border);
+  }
+  .badge.open{color:var(--green); border-color:var(--green);}
+  .badge.soon{color:var(--amber); border-color:var(--amber);}
+  .badge.closed{color:var(--red); border-color:var(--red);}
+  .cat{font-size:.72rem; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.03em;}
+  .title{font-size:1.02rem; font-weight:700; line-height:1.35; margin:0;}
+  .title a{color:inherit; text-decoration:none;}
+  .title a:hover{text-decoration:underline;}
+  .row{display:flex; justify-content:space-between; font-size:.82rem; color:var(--text-dim); gap:8px;}
+  .row b{color:var(--text); font-weight:600;}
+  .snippet{font-size:.83rem; color:var(--text-dim); line-height:1.5; max-height:4.5em; overflow:hidden;}
+  .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;}
+  .tag{font-size:.68rem; background:var(--surface-2); color:var(--text-dim); padding:2px 8px; border-radius:999px;}
+  .card-footer{display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:6px;}
+  .source{font-size:.74rem; color:var(--text-dim);}
+  .open-link{font-size:.82rem; font-weight:700; color:var(--accent); text-decoration:none;}
+  .open-link:hover{text-decoration:underline;}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+  }
+  .empty .big{font-size:2.4rem; margin-bottom:8px;}
+  footer{text-align:center; color:var(--text-dim); font-size:.78rem; padding:20px; opacity:.8;}
+  footer a{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>🏆 Cari Lomba — Viewer</h1>
+      <p>Tampilkan hasil <code>cari_lomba.py --format json</code> dalam kartu yang rapi, atau
+      <b>scan langsung dari browser</b> tanpa Python sama sekali. Semua data diproses &
+      disimpan <b>di browser kamu sendiri</b> (localStorage) — tidak ada yang dikirim ke
+      server lain selain situs sumber lomba itu sendiri.</p>
+      <p class="scan-note">🌐 Scan langsung baru mendukung sumber Blogger (KabarLomba, AjangLomba,
+      BiruLangit, InfoLombaIT, Infolomba) — Telegram &amp; Instagram diblokir CORS di browser,
+      tetap perlu <code>python cari_lomba.py</code>.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle">🌓 Ganti tema</button>
+  </div>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="load-row">
+      <button class="btn scan" id="scanBtn">🌐 Scan Blogger Sekarang</button>
+      <button class="btn danger" id="cancelScanBtn" style="display:none;">⏹️ Batalkan scan</button>
+    </div>
+    <div class="progress-bar" id="progressBar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+    <div class="scan-log" id="scanLog"></div>
+
+    <div class="divider-row">atau muat hasil dari python cari_lomba.py</div>
+
+    <div class="load-row">
+      <label class="btn primary" for="fileInput">📂 Muat file hasil.json</label>
+      <input type="file" id="fileInput" accept="application/json,.json">
+      <button class="btn" id="pasteBtn">📋 Tempel JSON</button>
+      <button class="btn" id="reloadCacheBtn">♻️ Muat dari cache</button>
+      <button class="btn danger" id="clearBtn">🗑️ Hapus cache</button>
+    </div>
+    <div class="meta-line" id="metaLine">Belum ada data. Klik <b>Scan Blogger Sekarang</b>, atau muat file <code>output/hasil.json</code> hasil dari <code>python cari_lomba.py --format json --output output/hasil.json</code>.</div>
+
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Cari judul / keyword...">
+      <select id="categoryFilter"><option value="">Semua kategori</option></select>
+      <select id="statusFilter">
+        <option value="">Semua status</option>
+        <option value="open">Masih dibuka</option>
+        <option value="soon">Segera tutup (&le;7 hari)</option>
+        <option value="closed">Sudah tutup</option>
+        <option value="unknown">Deadline tidak diketahui</option>
+      </select>
+      <select id="sortSelect">
+        <option value="deadline">Urutkan: deadline terdekat</option>
+        <option value="score">Urutkan: skor relevansi</option>
+        <option value="title">Urutkan: judul (A-Z)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stats" id="stats" style="display:none;">
+    <div class="stat"><div class="num" id="statTotal">0</div><div class="lbl">Total lomba</div></div>
+    <div class="stat"><div class="num" id="statOpen">0</div><div class="lbl">Masih dibuka</div></div>
+    <div class="stat"><div class="num" id="statSoon">0</div><div class="lbl">≤ 7 hari lagi</div></div>
+    <div class="stat"><div class="num" id="statClosed">0</div><div class="lbl">Sudah tutup</div></div>
+    <div class="stat"><div class="num" id="statUnknown">0</div><div class="lbl">Deadline ?</div></div>
+  </div>
+
+  <div id="content">
+    <div class="empty">
+      <div class="big">🔍</div>
+      <div>Belum ada data untuk ditampilkan.</div>
+      <div style="margin-top:6px;font-size:.85rem;">Klik <b>Muat file hasil.json</b> di atas untuk mulai.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Dibuat untuk proyek <a href="https://github.com/" target="_blank" rel="noopener">Cari Lomba</a> ·
+  Berjalan 100% di browser, tanpa server, tanpa tracking.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY = "cari-lomba:data";
+  var STORAGE_META_KEY = "cari-lomba:meta";
+  var THEME_KEY = "cari-lomba:theme";
+
+  var els = {
+    fileInput: document.getElementById("fileInput"),
+    pasteBtn: document.getElementById("pasteBtn"),
+    reloadCacheBtn: document.getElementById("reloadCacheBtn"),
+    clearBtn: document.getElementById("clearBtn"),
+    metaLine: document.getElementById("metaLine"),
+    searchInput: document.getElementById("searchInput"),
+    categoryFilter: document.getElementById("categoryFilter"),
+    statusFilter: document.getElementById("statusFilter"),
+    sortSelect: document.getElementById("sortSelect"),
+    stats: document.getElementById("stats"),
+    statTotal: document.getElementById("statTotal"),
+    statOpen: document.getElementById("statOpen"),
+    statSoon: document.getElementById("statSoon"),
+    statClosed: document.getElementById("statClosed"),
+    statUnknown: document.getElementById("statUnknown"),
+    content: document.getElementById("content"),
+    themeToggle: document.getElementById("themeToggle"),
+    scanBtn: document.getElementById("scanBtn"),
+    cancelScanBtn: document.getElementById("cancelScanBtn"),
+    progressBar: document.getElementById("progressBar"),
+    progressBarFill: document.getElementById("progressBarFill"),
+    scanLog: document.getElementById("scanLog"),
+  };
+
+  var currentData = [];
+
+  // ---------- tema ----------
+  function applyTheme(mode){
+    if(mode === "dark"){ document.documentElement.setAttribute("data-theme","dark"); }
+    else { document.documentElement.removeAttribute("data-theme"); }
+  }
+  (function initTheme(){
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e){}
+    if(!saved){
+      saved = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    applyTheme(saved);
+  })();
+  els.themeToggle.addEventListener("click", function(){
+    var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    var next = isDark ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch(e){}
+  });
+
+  // ---------- util tanggal ----------
+  function parseDate(s){
+    if(!s) return null;
+    var d = new Date(s + "T00:00:00");
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function daysUntil(d){
+    var today = new Date(); today.setHours(0,0,0,0);
+    return Math.round((d.getTime() - today.getTime()) / 86400000);
+  }
+  function fmtDate(d){
+    if(!d) return "tidak diketahui";
+    return d.toLocaleDateString("id-ID", {day:"numeric", month:"short", year:"numeric"});
+  }
+  function statusOf(item){
+    var d = parseDate(item.deadline);
+    if(!d) return "unknown";
+    var n = daysUntil(d);
+    if(n < 0) return "closed";
+    if(n <= 7) return "soon";
+    return "open";
+  }
+  function statusLabel(st, item){
+    var d = parseDate(item.deadline);
+    if(st === "unknown") return "Deadline ?";
+    var n = daysUntil(d);
+    if(st === "closed") return "Tutup " + Math.abs(n) + "h lalu";
+    if(st === "soon") return n === 0 ? "Tutup hari ini" : ("Sisa " + n + " hari");
+    return "Sisa " + n + " hari";
+  }
+
+  // ---------- render ----------
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function populateCategoryFilter(items){
+    var cats = Array.from(new Set(items.map(function(i){ return i.category || "Lainnya"; }))).sort();
+    var current = els.categoryFilter.value;
+    els.categoryFilter.innerHTML = '<option value="">Semua kategori</option>' +
+      cats.map(function(c){ return '<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>'; }).join("");
+    els.categoryFilter.value = current;
+  }
+
+  function renderStats(items){
+    var counts = {open:0, soon:0, closed:0, unknown:0};
+    items.forEach(function(i){ counts[statusOf(i)]++; });
+    els.stats.style.display = items.length ? "flex" : "none";
+    els.statTotal.textContent = items.length;
+    els.statOpen.textContent = counts.open;
+    els.statSoon.textContent = counts.soon;
+    els.statClosed.textContent = counts.closed;
+    els.statUnknown.textContent = counts.unknown;
+  }
+
+  function cardHtml(item){
+    var st = statusOf(item);
+    var d = parseDate(item.deadline);
+    var start = parseDate(item.start_date);
+    var keywords = (item.matched_keywords || "").toString();
+    var kwList = keywords ? keywords.split(",").map(function(k){return k.trim();}).filter(Boolean).slice(0,5) : [];
+    return (
+      '<div class="card" data-status="'+st+'" data-category="'+escapeHtml(item.category||"Lainnya")+'">' +
+        '<div class="card-top">' +
+          '<span class="cat">'+escapeHtml(item.category || "Lainnya")+'</span>' +
+          '<span class="badge '+st+'">'+statusLabel(st, item)+'</span>' +
+        '</div>' +
+        '<h3 class="title"><a href="'+escapeHtml(item.link||"#")+'" target="_blank" rel="noopener">'+escapeHtml(item.title||"(tanpa judul)")+'</a></h3>' +
+        '<div class="row"><span>Deadline</span><b>'+escapeHtml(fmtDate(d))+'</b></div>' +
+        '<div class="row"><span>Pelaksanaan</span><b>'+escapeHtml(fmtDate(start))+'</b></div>' +
+        (item.snippet ? '<div class="snippet">'+escapeHtml(item.snippet)+'</div>' : '') +
+        (kwList.length ? '<div class="tags">'+kwList.map(function(k){return '<span class="tag">'+escapeHtml(k)+'</span>';}).join("")+'</div>' : '') +
+        '<div class="card-footer">' +
+          '<span class="source">'+escapeHtml(item.source||"")+'</span>' +
+          '<a class="open-link" href="'+escapeHtml(item.link||"#")+'" target="_blank" rel="noopener">Buka &rarr;</a>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function applyFiltersAndRender(){
+    var q = els.searchInput.value.trim().toLowerCase();
+    var cat = els.categoryFilter.value;
+    var status = els.statusFilter.value;
+    var sortBy = els.sortSelect.value;
+
+    var filtered = currentData.filter(function(item){
+      if(cat && (item.category || "Lainnya") !== cat) return false;
+      if(status && statusOf(item) !== status) return false;
+      if(q){
+        var hay = ((item.title||"") + " " + (item.matched_keywords||"") + " " + (item.snippet||"")).toLowerCase();
+        if(hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    filtered.sort(function(a,b){
+      if(sortBy === "title"){
+        return (a.title||"").localeCompare(b.title||"");
+      }
+      if(sortBy === "score"){
+        return (b.score||0) - (a.score||0);
+      }
+      var da = parseDate(a.deadline), db = parseDate(b.deadline);
+      if(!da && !db) return (b.score||0)-(a.score||0);
+      if(!da) return 1;
+      if(!db) return -1;
+      return da - db;
+    });
+
+    renderStats(currentData);
+
+    if(!filtered.length){
+      els.content.innerHTML = '<div class="empty"><div class="big">🕵️</div><div>Tidak ada lomba yang cocok dengan filter ini.</div></div>';
+      return;
+    }
+    els.content.innerHTML = '<div class="grid">' + filtered.map(cardHtml).join("") + '</div>';
+  }
+
+  // ---------- load data ----------
+  function setData(items, sourceLabel){
+    currentData = Array.isArray(items) ? items : [];
+    populateCategoryFilter(currentData);
+    applyFiltersAndRender();
+    var now = new Date().toLocaleString("id-ID");
+    els.metaLine.textContent = currentData.length + " lomba dimuat dari " + sourceLabel + " · disimpan ke cache browser pada " + now;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+      localStorage.setItem(STORAGE_META_KEY, JSON.stringify({loadedAt: now, source: sourceLabel, count: currentData.length}));
+    } catch(e){
+      console.warn("Gagal simpan ke localStorage:", e);
+    }
+  }
+
+  function loadFromCacheIfAny(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var meta = localStorage.getItem(STORAGE_META_KEY);
+      if(raw){
+        currentData = JSON.parse(raw);
+        populateCategoryFilter(currentData);
+        applyFiltersAndRender();
+        var m = meta ? JSON.parse(meta) : null;
+        els.metaLine.textContent = currentData.length + " lomba (dari cache browser" +
+          (m && m.loadedAt ? ", terakhir dimuat " + m.loadedAt : "") + ")";
+        return true;
+      }
+    } catch(e){ console.warn(e); }
+    return false;
+  }
+
+  els.fileInput.addEventListener("change", function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try {
+        var json = JSON.parse(evt.target.result);
+        setData(json, "file “" + file.name + "”");
+      } catch(err){
+        alert("File bukan JSON valid: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  els.pasteBtn.addEventListener("click", function(){
+    var text = prompt("Tempel isi JSON hasil cari_lomba.py di sini:");
+    if(!text) return;
+    try {
+      var json = JSON.parse(text);
+      setData(json, "teks yang ditempel");
+    } catch(err){
+      alert("JSON tidak valid: " + err.message);
+    }
+  });
+
+  els.reloadCacheBtn.addEventListener("click", function(){
+    if(!loadFromCacheIfAny()){
+      alert("Belum ada data tersimpan di cache browser ini.");
+    }
+  });
+
+  els.clearBtn.addEventListener("click", function(){
+    if(!confirm("Hapus data lomba yang tersimpan di cache browser ini?")) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_META_KEY);
+    } catch(e){}
+    currentData = [];
+    els.categoryFilter.innerHTML = '<option value="">Semua kategori</option>';
+    els.metaLine.textContent = "Cache dihapus. Belum ada data. Muat file hasil.json untuk mulai lagi.";
+    els.stats.style.display = "none";
+    els.content.innerHTML = '<div class="empty"><div class="big">🔍</div><div>Belum ada data untuk ditampilkan.</div></div>';
+  });
+
+  [els.searchInput, els.categoryFilter, els.statusFilter, els.sortSelect].forEach(function(el){
+    el.addEventListener("input", applyFiltersAndRender);
+    el.addEventListener("change", applyFiltersAndRender);
+  });
+
+  // ==================================================================
+  // ---------- scan Blogger langsung dari browser (JSONP) ----------
+  // Port dari cari_lomba.py. Hanya sumber Blogger yang bisa di-scan dari
+  // browser (endpoint alt=json-in-script memang didesain untuk dipanggil
+  // lintas-origin lewat <script> tag, jadi tidak kena CORS). Telegram dan
+  // Instagram TIDAK mengizinkan cross-origin request dari browser sama
+  // sekali — sumber itu tetap wajib lewat "python cari_lomba.py".
+  //
+  // Daftar sumber & keyword di bawah ini adalah SALINAN dari config.yaml.
+  // Kalau kamu mengubah config.yaml, perbarui juga salinan ini secara
+  // manual supaya hasil scan langsung tetap sinkron.
+  // ==================================================================
+
+  var DEFAULT_CONFIG = {
+    bloggerSites: [
+      { name: "KabarLomba", baseUrl: "https://www.kabarlomba.com" },
+      { name: "AjangLomba", baseUrl: "https://www.ajanglomba.com" },
+      { name: "BiruLangit", baseUrl: "https://www.birulangit.id" },
+      { name: "InfoLombaIT", baseUrl: "https://www.infolombait.com" },
+      { name: "Infolomba", baseUrl: "https://www.infolomba.com" },
+    ],
+    strong: [
+      "renewable energy","energi terbarukan","energi bersih","energi baru","elektro",
+      "electrical engineering","kelistrikan","internet of things","robotika",
+      "kendaraan listrik","electric vehicle","smart grid","embedded system",
+      "mikrokontroler","PLTS","PLTB","PLTA","solar cell","panel surya",
+      "sustainable energy","green energy","inovasi teknologi","PLC",
+      "programmable logic controller","otomasi","automation","sistem kendali",
+      "kontrol otomatis","scada","hmi","telemetry","IoT",
+      "pertamuda","gemastik","hackathon",
+    ],
+    weak: [
+      "teknologi","inovasi","robot","EV","AI","artificial intelligence",
+      "kecerdasan buatan","machine learning","deep learning","pemrograman",
+      "pemograman","sensor","data science","oee",
+    ],
+    exclude: ["lomba mewarnai","tingkat SD","tingkat SMP","lomba menari","lomba menyanyi"],
+    freshnessDays: 240,
+  };
+
+  var BULAN = {
+    januari:1, jan:1, februari:2, feb:2, maret:3, mar:3, april:4, apr:4, mei:5,
+    juni:6, jun:6, juli:7, jul:7, agustus:8, agt:8, ags:8, september:9, sept:9,
+    sep:9, oktober:10, okt:10, november:11, nov:11, desember:12, des:12,
+  };
+  var BULAN_PATTERN = Object.keys(BULAN).sort(function(a,b){ return b.length - a.length; }).join("|");
+  var RANGE_SEP = "(?:[-–—]|s\\.?\\s*/?\\s*d\\.?|sampai(?:\\s+dengan)?)";
+  var DATE_RANGE_TAIL_RE = new RegExp("(\\d{1,2})\\s+(?:" + BULAN_PATTERN + ")?\\s*" + RANGE_SEP + "\\s*(\\d{1,2})\\s+(" + BULAN_PATTERN + ")\\s+(\\d{4})", "i");
+  var SINGLE_DATE_RE = new RegExp("(\\d{1,2})\\s+(" + BULAN_PATTERN + ")\\s+(\\d{4})", "i");
+  var NUMERIC_DATE_RE = /\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/;
+  var DEADLINE_TRIGGER_RE = /(?:deadline|batas\s+akhir|batas\s+waktu|paling\s+lambat|ditutup|berakhir|terakhir\s+pendaftaran|penutupan\s+pendaftaran|early\s+bird|gelombang\s+terakhir|close\s+registration)/gi;
+  var PENDAFTARAN_TRIGGER_RE = /pendaftaran/gi;
+  var START_TRIGGER_RE = /(?:pelaksanaan|dilaksanakan|digelar|berlangsung|acara\s+puncak|grand\s+final|final\s+akan|\bfinal\b|puncak\s+acara|\bawarding\b|pengumuman\s+pemenang)/gi;
+  var COMPETITION_HINT_RE = /\b(lomba|competition|kompetisi|kontes|lkti|lktin|essay|esai|olimpiade|challenge|business\s*plan|bisnis\s*plan|\bbmc\b|infografis|infographic|paper|poster|debat|pkm|hackathon|inovasi|business\s*case)\b/i;
+  var CATEGORY_PATTERNS = [
+    ["Business Plan", /\b(business\s*plan|bisnis\s*plan|\bbmc\b|business\s*case)\b/i],
+    ["Infografis", /\b(infografis|infographic)\b/i],
+    ["Paper/LKTI", /\b(lkti|lktin|paper|karya\s+tulis)\b/i],
+    ["Esai", /\b(esai|essay)\b/i],
+    ["Poster", /\bposter\b/i],
+    ["Video", /\bvideo\b/i],
+    ["Hackathon/PKM", /\b(hackathon|pkm)\b/i],
+    ["Debat", /\bdebat\b/i],
+  ];
+
+  function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  var _kwPatternCache = {};
+  function keywordPattern(kw){
+    kw = kw.trim();
+    if(!_kwPatternCache[kw]) _kwPatternCache[kw] = new RegExp("\\b" + escapeRegExp(kw) + "\\b", "i");
+    return _kwPatternCache[kw];
+  }
+  function keywordMatches(text, keywords){
+    return keywords.filter(function(kw){ return keywordPattern(kw).test(text); });
+  }
+
+  function toIsoDate(d){
+    if(!d) return "";
+    var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+    return y+"-"+m+"-"+day;
+  }
+  function parseIdDate(day, monthName, year){
+    var month = BULAN[monthName.toLowerCase()];
+    if(!month) return null;
+    var d = new Date(Number(year), month-1, Number(day));
+    return (d.getFullYear()===Number(year) && d.getMonth()===month-1 && d.getDate()===Number(day)) ? d : null;
+  }
+  function parseNumericDate(day, month, year){
+    var m = Number(month);
+    if(!(m>=1 && m<=12)) return null;
+    var d = new Date(Number(year), m-1, Number(day));
+    return (d.getFullYear()===Number(year) && d.getMonth()===m-1 && d.getDate()===Number(day)) ? d : null;
+  }
+  function findDateNear(text, triggerRe, window){
+    triggerRe.lastIndex = 0;
+    var m;
+    while((m = triggerRe.exec(text))){
+      var raw = text.slice(m.index + m[0].length, m.index + m[0].length + window);
+      var sentenceEnd = raw.search(/\.(?:\s|$)/);
+      var newlineEnd = raw.indexOf("\n");
+      var stops = [sentenceEnd, newlineEnd].filter(function(i){ return i !== -1; });
+      var chunk = stops.length ? raw.slice(0, Math.min.apply(null, stops)) : raw;
+
+      var rm = DATE_RANGE_TAIL_RE.exec(chunk);
+      if(rm){ var d1 = parseIdDate(rm[2], rm[3], rm[4]); if(d1) return d1; }
+      var sm = SINGLE_DATE_RE.exec(chunk);
+      if(sm){ var d2 = parseIdDate(sm[1], sm[2], sm[3]); if(d2) return d2; }
+      var nm = NUMERIC_DATE_RE.exec(chunk);
+      if(nm){ var d3 = parseNumericDate(nm[1], nm[2], nm[3]); if(d3) return d3; }
+      if(triggerRe.lastIndex === m.index) triggerRe.lastIndex++; // safety
+    }
+    return null;
+  }
+  function findDeadline(text){
+    return findDateNear(text, DEADLINE_TRIGGER_RE, 45) || findDateNear(text, PENDAFTARAN_TRIGGER_RE, 80);
+  }
+  function findStartDate(text){
+    return findDateNear(text, START_TRIGGER_RE, 60);
+  }
+
+  function isRelevant(matched, matchedInTitle, strongSet, weakSet){
+    var matchedLower = matched.map(function(m){ return m.trim().toLowerCase(); });
+    if(matchedLower.some(function(m){ return strongSet.has(m); })) return true;
+    var titleLower = matchedInTitle.map(function(m){ return m.trim().toLowerCase(); });
+    var weakHits = new Set(matchedLower.filter(function(m){ return weakSet.has(m); }));
+    var weakTitleHits = new Set(titleLower.filter(function(m){ return weakSet.has(m); }));
+    return weakHits.size >= 2 && weakTitleHits.size >= 1;
+  }
+  function isCompetitionPost(title, categories){
+    if(categories.some(function(c){ return COMPETITION_HINT_RE.test(c); })) return true;
+    return COMPETITION_HINT_RE.test(title);
+  }
+  function detectCategory(title){
+    for(var i=0;i<CATEGORY_PATTERNS.length;i++){
+      if(CATEGORY_PATTERNS[i][1].test(title)) return CATEGORY_PATTERNS[i][0];
+    }
+    return "Lainnya";
+  }
+  function relevanceScore(matched, matchedInTitle, strongSet){
+    var matchedLower = new Set(matched.map(function(m){ return m.trim().toLowerCase(); }));
+    var titleLower = new Set(matchedInTitle.map(function(m){ return m.trim().toLowerCase(); }));
+    var score = 0;
+    matchedLower.forEach(function(m){ if(strongSet.has(m)) score += 3; });
+    score += 2 * titleLower.size;
+    score += matchedLower.size;
+    return score;
+  }
+  function stripHtml(html){
+    try {
+      var doc = new DOMParser().parseFromString(html || "", "text/html");
+      return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+    } catch(e){ return ""; }
+  }
+
+  // Dice coefficient bigram — pendekatan ringan pengganti difflib.SequenceMatcher
+  // Python (tidak identik, tapi cukup untuk mendeteksi judul yang sangat mirip).
+  function normTitle(t){ return (t||"").toLowerCase().replace(/[^a-z0-9 ]/g, "").trim(); }
+  function bigrams(s){ var arr=[]; for(var i=0;i<s.length-1;i++) arr.push(s.slice(i,i+2)); return arr; }
+  function diceCoefficient(a, b){
+    if(!a || !b) return 0;
+    var bgA = bigrams(a), bgB = bigrams(b);
+    if(!bgA.length || !bgB.length) return a === b ? 1 : 0;
+    var mapB = new Map();
+    bgB.forEach(function(bg){ mapB.set(bg, (mapB.get(bg)||0)+1); });
+    var matches = 0;
+    bgA.forEach(function(bg){
+      var c = mapB.get(bg);
+      if(c > 0){ matches++; mapB.set(bg, c-1); }
+    });
+    return (2*matches) / (bgA.length + bgB.length);
+  }
+  function dedupItems(items){
+    var unique = [];
+    items.forEach(function(item){
+      var itemNorm = normTitle(item.title);
+      var match = null;
+      for(var i=0;i<unique.length;i++){
+        var existing = unique[i];
+        var ratio = diceCoefficient(itemNorm, normTitle(existing.title));
+        if(ratio >= 0.6 || (item.link && item.link === existing.link)){ match = existing; break; }
+      }
+      if(match){
+        if(item.source !== match.source && match.also_seen_on.indexOf(item.source) === -1){
+          match.also_seen_on.push(item.source);
+        }
+        match.deadline = match.deadline || item.deadline;
+        match.start_date = match.start_date || item.start_date;
+        match.score = Math.max(match.score, item.score);
+      } else {
+        unique.push(item);
+      }
+    });
+    return unique;
+  }
+
+  var _jsonpCounter = 0;
+  function fetchJSONP(url, timeoutMs){
+    return new Promise(function(resolve, reject){
+      var cbName = "cariLombaCb_" + (++_jsonpCounter) + "_" + Date.now();
+      var script = document.createElement("script");
+      var done = false;
+      var timer = setTimeout(function(){
+        if(!done){ done = true; cleanup(); reject(new Error("timeout")); }
+      }, timeoutMs || 15000);
+      function cleanup(){
+        clearTimeout(timer);
+        delete window[cbName];
+        if(script.parentNode) script.parentNode.removeChild(script);
+      }
+      window[cbName] = function(data){
+        if(done) return;
+        done = true;
+        cleanup();
+        resolve(data);
+      };
+      script.onerror = function(){
+        if(done) return;
+        done = true;
+        cleanup();
+        reject(new Error("gagal memuat script"));
+      };
+      script.src = url + (url.indexOf("?") === -1 ? "?" : "&") + "callback=" + cbName;
+      document.body.appendChild(script);
+    });
+  }
+
+  function pMapLimit(items, limit, fn){
+    var ret = new Array(items.length);
+    var i = 0;
+    var workerCount = Math.min(limit, items.length) || 0;
+    var workers = [];
+    for(var w=0; w<workerCount; w++){
+      workers.push((function worker(){
+        return Promise.resolve().then(function step(){
+          if(scanCancelled) return;
+          var idx = i++;
+          if(idx >= items.length) return;
+          return Promise.resolve(fn(items[idx], idx)).then(function(r){
+            ret[idx] = r;
+            return step();
+          });
+        });
+      })());
+    }
+    return Promise.all(workers).then(function(){ return ret; });
+  }
+
+  var scanCancelled = false;
+  var scanRunning = false;
+
+  function logScan(msg){
+    els.scanLog.style.display = "block";
+    els.scanLog.textContent += msg + "\n";
+    els.scanLog.scrollTop = els.scanLog.scrollHeight;
+  }
+
+  function setProgress(done, total){
+    els.progressBar.style.display = "block";
+    var pct = total ? Math.round((done/total)*100) : 0;
+    els.progressBarFill.style.width = pct + "%";
+  }
+
+  async function fetchBloggerEntries(site, keyword, freshnessCutoff){
+    var url = site.baseUrl.replace(/\/$/, "") + "/feeds/posts/default";
+    var qs = "q=" + encodeURIComponent(keyword) + "&alt=json-in-script&max-results=25";
+    var data;
+    try {
+      data = await fetchJSONP(url + "?" + qs, 8000);
+    } catch(e){
+      logScan("  [!] " + site.name + ": gagal ambil \"" + keyword + "\" (" + e.message + ")");
+      throw e;
+    }
+    var entries = (data && data.feed && data.feed.entry) || [];
+    var out = [];
+    entries.forEach(function(entry){
+      var title = ((entry.title && entry.title.$t) || "").trim();
+      var contentHtml = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || "";
+      var contentText = stripHtml(contentHtml);
+      var published = (entry.published && entry.published.$t) || "";
+      var categories = (entry.category || []).map(function(c){ return c.term || ""; });
+
+      if(published){
+        var publishedTime = Date.parse(published);
+        if(!isNaN(publishedTime) && publishedTime < freshnessCutoff) return;
+      }
+      if(!isCompetitionPost(title, categories)) return;
+
+      var link = "";
+      (entry.link || []).some(function(l){
+        if(l.rel === "alternate"){ link = l.href || ""; return true; }
+        return false;
+      });
+
+      out.push({
+        id: (entry.id && entry.id.$t) || link || title,
+        title: title, link: link, source: site.name,
+        published: published ? published.slice(0,10) : null,
+        fullText: (title + " " + contentText),
+        titleText: title,
+        snippet: contentText.slice(0,280),
+      });
+    });
+    return out;
+  }
+
+  async function scanBlogger(){
+    scanCancelled = false;
+    scanRunning = true;
+    els.scanBtn.disabled = true;
+    els.scanBtn.textContent = "⏳ Sedang scan...";
+    els.cancelScanBtn.style.display = "inline-block";
+    els.scanLog.textContent = "";
+    els.scanLog.style.display = "block";
+    setProgress(0, 1);
+
+    var cfg = DEFAULT_CONFIG;
+    var keywords = cfg.strong.concat(cfg.weak);
+    var strongSet = new Set(cfg.strong.map(function(k){ return k.trim().toLowerCase(); }));
+    var weakSet = new Set(cfg.weak.map(function(k){ return k.trim().toLowerCase(); }));
+    var excludeList = cfg.exclude.map(function(e){ return e.toLowerCase(); });
+    var freshnessCutoff = Date.now() - cfg.freshnessDays*86400000;
+
+    var tasks = [];
+    cfg.bloggerSites.forEach(function(site){
+      keywords.forEach(function(kw){ tasks.push({site:site, kw:kw}); });
+    });
+
+    logScan("Menyiapkan " + tasks.length + " permintaan ke " + cfg.bloggerSites.length + " situs Blogger...");
+
+    var seenPerSite = {};
+    var rawResults = [];
+    var doneCount = 0;
+    var siteFailCount = {};
+    var deadSites = new Set();
+    var MAX_FAILS_BEFORE_SKIP = 3;
+
+    await pMapLimit(tasks, 6, async function(task){
+      if(scanCancelled) return;
+      var siteName = task.site.name;
+      if(deadSites.has(siteName)){
+        doneCount++;
+        return;
+      }
+      var entries;
+      try {
+        entries = await fetchBloggerEntries(task.site, task.kw, freshnessCutoff);
+      } catch(e){
+        siteFailCount[siteName] = (siteFailCount[siteName] || 0) + 1;
+        if(siteFailCount[siteName] >= MAX_FAILS_BEFORE_SKIP && !deadSites.has(siteName)){
+          deadSites.add(siteName);
+          logScan("  [!] " + siteName + ": dilewati sisa keyword-nya, situs tidak merespon berkali-kali.");
+        }
+        doneCount++;
+        setProgress(doneCount, tasks.length);
+        return;
+      }
+      if(!seenPerSite[siteName]) seenPerSite[siteName] = new Set();
+      var seen = seenPerSite[siteName];
+      entries.forEach(function(e){
+        if(seen.has(e.id)) return;
+        seen.add(e.id);
+        var matched = keywordMatches(e.fullText, keywords);
+        if(!matched.length) return;
+        rawResults.push({
+          title: e.title, link: e.link, source: e.source, published: e.published,
+          snippet: e.snippet,
+          matched: matched,
+          matchedInTitle: keywordMatches(e.titleText, keywords),
+          fullText: e.fullText,
+        });
+      });
+      doneCount++;
+      setProgress(doneCount, tasks.length);
+      if(doneCount % 8 === 0 || doneCount === tasks.length){
+        logScan("Progres: " + doneCount + "/" + tasks.length + " permintaan selesai (" + rawResults.length + " kandidat lomba)");
+      }
+    });
+
+    if(scanCancelled){
+      logScan("Scan dibatalkan.");
+      finishScan();
+      return;
+    }
+
+    var relevant = rawResults.filter(function(r){
+      return isRelevant(r.matched, r.matchedInTitle, strongSet, weakSet);
+    });
+
+    var items = relevant.map(function(r){
+      var deadline = findDeadline(r.fullText);
+      var startDate = findStartDate(r.fullText);
+      return {
+        title: r.title, link: r.link, source: r.source, published: r.published,
+        deadline: toIsoDate(deadline), start_date: toIsoDate(startDate),
+        snippet: r.snippet,
+        matched_keywords: r.matched.join(", "),
+        matched_in_title: r.matchedInTitle.join(", "),
+        also_seen_on: [],
+        category: detectCategory(r.title),
+        score: relevanceScore(r.matched, r.matchedInTitle, strongSet),
+      };
+    });
+
+    var filtered = excludeList.length
+      ? items.filter(function(i){
+          var hay = (i.title + " " + i.snippet).toLowerCase();
+          return !excludeList.some(function(ex){ return hay.indexOf(ex) !== -1; });
+        })
+      : items;
+
+    var deduped = dedupItems(filtered);
+    deduped.forEach(function(i){ i.also_seen_on = i.also_seen_on.join(", "); });
+
+    logScan("Selesai. " + deduped.length + " lomba relevan ditemukan dari " + cfg.bloggerSites.length + " situs Blogger.");
+    setData(deduped, "scan langsung Blogger (Telegram/Instagram butuh python cari_lomba.py)");
+    finishScan();
+  }
+
+  function finishScan(){
+    scanRunning = false;
+    els.scanBtn.disabled = false;
+    els.scanBtn.textContent = "🌐 Scan Blogger Sekarang";
+    els.cancelScanBtn.style.display = "none";
+  }
+
+  els.scanBtn.addEventListener("click", function(){
+    if(scanRunning) return;
+    scanBlogger().catch(function(e){
+      logScan("[!] Scan gagal total: " + e.message);
+      finishScan();
+    });
+  });
+  els.cancelScanBtn.addEventListener("click", function(){
+    scanCancelled = true;
+    els.cancelScanBtn.disabled = true;
+    setTimeout(function(){ els.cancelScanBtn.disabled = false; }, 500);
+  });
+
+  // Auto-load dari cache saat halaman dibuka
+  loadFromCacheIfAny();
+})();
+</script>
+</body>
+</html>

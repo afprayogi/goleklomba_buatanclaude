@@ -1,0 +1,133 @@
+# Konfigurasi cari-lomba
+# Edit file ini untuk menambah/mengurangi keyword filter dan sumber data.
+
+keywords:
+  # STRONG: kalau salah satu muncul, lomba langsung dianggap relevan (jarang false positive)
+  strong:
+    - renewable energy
+    - energi terbarukan
+    - energi bersih
+    - energi baru
+    - elektro
+    - electrical engineering
+    - kelistrikan
+    - internet of things
+    - robotika
+    - kendaraan listrik
+    - electric vehicle
+    - smart grid
+    - embedded system
+    - mikrokontroler
+    - PLTS
+    - PLTB
+    - PLTA
+    - solar cell
+    - panel surya
+    - sustainable energy
+    - green energy
+    - inovasi teknologi
+    - PLC
+    - programmable logic controller
+    - otomasi
+    - automation
+    - sistem kendali
+    - kontrol otomatis
+    - scada
+    - hmi
+    - telemetry
+    - internet of things
+    - IoT
+    # Nama kompetisi spesifik yang memang bertema energi/teknologi (bukan "tipe lomba"
+    # umum kayak essay/PKM/KTI yang bisa dipakai topik apa saja):
+    - pertamuda
+    - gemastik
+    - hackathon
+
+  # WEAK: kata umum, gampang salah tangkap (butuh >=2 match beda & minimal 1 di judul).
+  # CATATAN: sengaja TIDAK ada "KTI"/"karya tulis ilmiah"/"PKM"/"essay nasional"/
+  # "capstone" di sini — itu semua nama TIPE lomba (esai, PKM, dst), bisa dipakai
+  # untuk topik apa pun (kesehatan, ekonomi, pendidikan...), jadi kalau dimasukkan
+  # sebagai sinyal topik malah bikin lomba yang gak nyambung ikut lolos lagi
+  # (persis masalah yang pernah kita perbaiki sebelumnya).
+  weak:
+    - teknologi
+    - inovasi
+    - robot
+    - EV
+    - AI
+    - artificial intelligence
+    - kecerdasan buatan
+    - machine learning
+    - deep learning
+    - pemrograman
+    - pemograman
+    - sensor
+    - data science
+    - oee
+
+  # Mengecualikan lomba yang tidak relevan (misal: tingkat SD/SMP atau non-teknik)
+  exclude:
+    - "lomba mewarnai"
+    - "tingkat SD"
+    - "tingkat SMP"
+    - "lomba menari"
+    - "lomba menyanyi"
+
+sources:
+  # Situs berbasis Blogger (punya API JSON bawaan: /feeds/posts/default?q=...)
+  blogger_sites:
+    - name: KabarLomba
+      base_url: https://www.kabarlomba.com
+    - name: AjangLomba
+      base_url: https://www.ajanglomba.com
+    - name: BiruLangit
+      base_url: https://www.birulangit.id
+    - name: InfoLombaIT
+      base_url: https://www.infolombait.com
+    # Penambahan Website Blogger Populer Lainnya:
+    - name: Infolomba
+      base_url: https://www.infolomba.com
+    # Dicoba & dinonaktifkan (2026-08-10) — bukan situs Blogger, endpoint
+    # /feeds/posts/default selalu 404 atau domainnya tidak resolve sama sekali.
+    # Perlu scraper HTML khusus kalau mau dipakai, beda dari mekanisme situs lain
+    # di atas. Nonaktif dulu supaya tidak bikin ~30 request gagal tiap run.
+    # - name: LombaAsia          # www.lombaasia.com -> domain tidak resolve (DNS gagal)
+    #   base_url: https://www.lombaasia.com
+    # - name: Informasilomba     # www.informasilomba.com -> ada situsnya, tapi bukan Blogger (404)
+    #   base_url: https://www.informasilomba.com
+    # - name: EventKampus        # eventkampus.com -> ada situsnya, tapi bukan Blogger (404)
+    #   base_url: https://www.eventkampus.com
+
+  # Channel publik Telegram (tanpa @, tanpa login)
+  telegram_channels:
+    - informasilomba
+    - edulantern
+    - infolomba_ofc
+    # Penambahan Channel Telegram Aktif:
+    - infolombamahasiswa
+    - lombamahasiswa
+    - infolombanational
+    - eventmahasiswa
+    - id_scholarship
+
+  # Instagram (Instaloader)
+  instagram:
+    session_username: ""   # Isi username IG Anda setelah login via terminal
+    accounts:
+      - infolomba_ofc
+      - edulantern
+      # Penambahan Akun IG Pusat Lomba Mahasiswa:
+      - infolomba
+      - lombamahasiswa
+      - infolombamahasiswa
+      - eventmahasiswa.id
+      - olimpiadenasional
+      - pointweb.id
+
+  manual_watch:
+    twitter_x: []
+
+output:
+  default_format: table   # table | csv | json
+  default_dir: output
+  freshness_days: 240     # Mengambil postingan dalam 8 bulan terakhir

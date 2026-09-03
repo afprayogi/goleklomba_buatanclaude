@@ -1,0 +1,33 @@
+# Konfigurasi pengirim WhatsApp untuk info lomba.
+# Server ini jalan LOKAL di komputer kamu sendiri (localhost) — bukan layanan
+# pihak ketiga — jadi credential di bawah tidak keluar dari komputer kamu.
+# Tetap jangan commit file ini ke repo publik kalau nanti pakai git.
+
+gateway:
+  base_url: "http://localhost:3000"
+  username: "user1"
+  password: "pass1"
+  device_id: ""   # isi kalau kamu punya lebih dari satu nomor/device login di server ini
+
+# Ke mana pesan dikirim. Boleh isi lebih dari satu nomor/grup, semua bakal dikirimi
+# pesan yang sama. GANTI contoh di bawah dengan nomor/grup WhatsApp kamu sendiri
+# (format nomor: "62xxxxxxxxxx@s.whatsapp.net", format grup: "<groupid>@g.us").
+recipients:
+  personal:
+    - "628xxxxxxxxxx@s.whatsapp.net"   # <-- ganti dengan nomor tujuan kamu
+  groups:
+    - ""   # isi dengan "<groupid>@g.us" punya kamu (kosongkan/hapus baris ini kalau belum ada)
+
+# "single_text"    = semua lomba baru digabung jadi satu pesan teks (aman, gak spam)
+# "per_item_link"  = tiap lomba dikirim terpisah pakai /send/link (ada preview link,
+#                    tapi kalau lomba barunya banyak, WhatsApp bisa kirim banyak pesan sekaligus)
+send_mode: "single_text"
+
+# Maksimal berapa lomba digabung dalam satu pesan teks (biar gak kepanjangan).
+# Kalau lomba baru lebih banyak dari ini, dipecah jadi beberapa pesan.
+max_items_per_message: 10
+
+# File pencatat lomba yang SUDAH pernah dikirim, supaya run berikutnya tidak
+# mengirim ulang yang sama (dedup). Jangan hapus manual kecuali memang mau
+# semua lomba yang ada dikirim ulang dari awal.
+history_file: "wa_sent_history.json"

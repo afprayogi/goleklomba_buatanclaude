@@ -1,0 +1,40 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cari Lomba banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="55%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#c026d3"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="85%" cy="10%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <rect width="1200" height="300" fill="url(#grid)"/>
+  <rect width="1200" height="300" fill="url(#glow)"/>
+
+  <!-- decorative circuit lines -->
+  <g stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" fill="none">
+    <path d="M950 40 h80 v50 h60"/>
+    <circle cx="950" cy="40" r="4" fill="#ffffff" fill-opacity="0.5"/>
+    <circle cx="1090" cy="90" r="4" fill="#ffffff" fill-opacity="0.5"/>
+    <path d="M1000 220 h100 v-40 h60"/>
+    <circle cx="1000" cy="220" r="4" fill="#ffffff" fill-opacity="0.5"/>
+    <circle cx="1160" cy="180" r="4" fill="#ffffff" fill-opacity="0.5"/>
+  </g>
+
+  <!-- trophy icon -->
+  <g transform="translate(70,95)">
+    <rect x="0" y="0" width="110" height="110" rx="24" fill="#ffffff" fill-opacity="0.16"/>
+    <text x="55" y="78" font-size="58" text-anchor="middle">🏆</text>
+  </g>
+
+  <text x="210" y="140" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700" fill="#ffffff">Cari Lomba</text>
+  <text x="212" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#ffffff" fill-opacity="0.92">Renewable Energy &#183; Teknik Elektro &#183; Inovasi Teknologi</text>
+  <text x="212" y="214" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#ffffff" fill-opacity="0.75">Otomatis mencari &amp; merangkum info lomba dari berbagai sumber — lengkap dengan deadline</text>
+</svg>

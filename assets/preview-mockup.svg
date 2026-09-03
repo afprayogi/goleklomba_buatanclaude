@@ -1,0 +1,119 @@
+<svg viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mockup tampilan viewer.html">
+  <defs>
+    <linearGradient id="hdr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <style>
+      .card{fill:#171a23; stroke:#2a2f3d; stroke-width:1;}
+      .title{font-family:Segoe UI, Arial, sans-serif; fill:#e9eaf0; font-weight:700;}
+      .dim{font-family:Segoe UI, Arial, sans-serif; fill:#9498a8;}
+      .val{font-family:Segoe UI, Arial, sans-serif; fill:#e9eaf0; font-weight:700;}
+      .chip{font-family:Segoe UI, Arial, sans-serif; fill:#9498a8; font-size:12px;}
+    </style>
+  </defs>
+
+  <rect width="1000" height="640" rx="18" fill="#0f1117"/>
+
+  <!-- header -->
+  <rect width="1000" height="110" rx="18" fill="url(#hdr)"/>
+  <rect y="92" width="1000" height="18" fill="url(#hdr)"/>
+  <text x="36" y="50" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#fff">🏆 Cari Lomba — Viewer</text>
+  <text x="36" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#ffffffdd">Berjalan 100% di browser &#183; data disimpan di localStorage, bukan di server</text>
+  <rect x="860" y="34" width="104" height="34" rx="10" fill="#ffffff2e" stroke="#ffffff59"/>
+  <text x="912" y="56" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle">🌓 Tema</text>
+
+  <!-- toolbar panel -->
+  <rect x="30" y="130" width="940" height="60" rx="14" class="card"/>
+  <rect x="50" y="145" width="150" height="30" rx="8" fill="#4f46e5"/>
+  <text x="125" y="165" font-size="13" fill="#fff" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif">📂 Muat hasil.json</text>
+  <rect x="212" y="145" width="130" height="30" rx="8" fill="#1e2230" stroke="#2a2f3d"/>
+  <text x="277" y="165" class="chip" text-anchor="middle">📋 Tempel JSON</text>
+  <rect x="354" y="145" width="140" height="30" rx="8" fill="#1e2230" stroke="#2a2f3d"/>
+  <text x="424" y="165" class="chip" text-anchor="middle">♻️ Muat dari cache</text>
+
+  <!-- stat cards -->
+  <g>
+    <rect x="30" y="206" width="176" height="70" rx="12" class="card"/>
+    <text x="48" y="242" class="val" font-size="22">18</text>
+    <text x="48" y="262" class="dim" font-size="11">TOTAL LOMBA</text>
+
+    <rect x="216" y="206" width="176" height="70" rx="12" class="card"/>
+    <text x="234" y="242" class="val" font-size="22" fill="#4ade80">9</text>
+    <text x="234" y="262" class="dim" font-size="11">MASIH DIBUKA</text>
+
+    <rect x="402" y="206" width="176" height="70" rx="12" class="card"/>
+    <text x="420" y="242" class="val" font-size="22" fill="#fbbf24">4</text>
+    <text x="420" y="262" class="dim" font-size="11">&#8804; 7 HARI LAGI</text>
+
+    <rect x="588" y="206" width="176" height="70" rx="12" class="card"/>
+    <text x="606" y="242" class="val" font-size="22" fill="#f87171">5</text>
+    <text x="606" y="262" class="dim" font-size="11">SUDAH TUTUP</text>
+
+    <rect x="774" y="206" width="196" height="70" rx="12" class="card"/>
+    <text x="792" y="242" class="val" font-size="22">0</text>
+    <text x="792" y="262" class="dim" font-size="11">DEADLINE ?</text>
+  </g>
+
+  <!-- competition cards -->
+  <g>
+    <!-- card 1 -->
+    <rect x="30" y="300" width="298" height="220" rx="14" class="card"/>
+    <text x="50" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#818cf8" font-weight="700">HACKATHON/PKM</text>
+    <rect x="230" y="316" width="78" height="22" rx="11" fill="none" stroke="#fbbf24"/>
+    <text x="269" y="331" font-size="11" fill="#fbbf24" text-anchor="middle">Sisa 2 hari</text>
+    <text x="50" y="360" class="title" font-size="16">APAC Stellar Hackathon 2026</text>
+    <text x="50" y="386" class="dim" font-size="12">Deadline</text>
+    <text x="308" y="386" class="val" font-size="12" text-anchor="end">6 Sep 2026</text>
+    <text x="50" y="408" class="dim" font-size="12">Pelaksanaan</text>
+    <text x="308" y="408" class="val" font-size="12" text-anchor="end">1 Nov 2026</text>
+    <text x="50" y="436" class="dim" font-size="12">Hackathon regional untuk solusi</text>
+    <text x="50" y="452" class="dim" font-size="12">IoT dan energi terbarukan.</text>
+    <rect x="50" y="466" width="46" height="20" rx="10" fill="#1e2230"/>
+    <text x="73" y="480" class="chip" text-anchor="middle" font-size="10">IoT</text>
+    <rect x="102" y="466" width="98" height="20" rx="10" fill="#1e2230"/>
+    <text x="151" y="480" class="chip" text-anchor="middle" font-size="10">energi terbarukan</text>
+    <text x="50" y="504" class="dim" font-size="11">InfoLombaIT</text>
+    <text x="308" y="504" font-size="12" fill="#818cf8" text-anchor="end" font-weight="700">Buka &#8594;</text>
+
+    <!-- card 2 -->
+    <rect x="350" y="300" width="298" height="220" rx="14" class="card"/>
+    <text x="370" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#818cf8" font-weight="700">BUSINESS PLAN</text>
+    <rect x="560" y="316" width="70" height="22" rx="11" fill="none" stroke="#4ade80"/>
+    <text x="595" y="331" font-size="11" fill="#4ade80" text-anchor="middle">21 hari</text>
+    <text x="370" y="360" class="title" font-size="16">Business Plan ACTIVE 2026</text>
+    <text x="370" y="386" class="dim" font-size="12">Deadline</text>
+    <text x="628" y="386" class="val" font-size="12" text-anchor="end">25 Sep 2026</text>
+    <text x="370" y="408" class="dim" font-size="12">Pelaksanaan</text>
+    <text x="628" y="408" class="val" font-size="12" text-anchor="end">tidak diketahui</text>
+    <text x="370" y="436" class="dim" font-size="12">Fokus solusi energi bersih dan</text>
+    <text x="370" y="452" class="dim" font-size="12">kendaraan listrik.</text>
+    <rect x="370" y="466" width="110" height="20" rx="10" fill="#1e2230"/>
+    <text x="425" y="480" class="chip" text-anchor="middle" font-size="10">energi bersih</text>
+    <rect x="486" y="466" width="122" height="20" rx="10" fill="#1e2230"/>
+    <text x="547" y="480" class="chip" text-anchor="middle" font-size="10">kendaraan listrik</text>
+    <text x="370" y="504" class="dim" font-size="11">AjangLomba</text>
+    <text x="628" y="504" font-size="12" fill="#818cf8" text-anchor="end" font-weight="700">Buka &#8594;</text>
+
+    <!-- card 3 -->
+    <rect x="670" y="300" width="298" height="220" rx="14" class="card"/>
+    <text x="690" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#818cf8" font-weight="700">LAINNYA</text>
+    <rect x="880" y="316" width="70" height="22" rx="11" fill="none" stroke="#f87171"/>
+    <text x="915" y="331" font-size="11" fill="#f87171" text-anchor="middle">Tutup</text>
+    <text x="690" y="360" class="title" font-size="16">PLTS Innovation Challenge</text>
+    <text x="690" y="386" class="dim" font-size="12">Deadline</text>
+    <text x="948" y="386" class="val" font-size="12" text-anchor="end">20 Agu 2026</text>
+    <text x="690" y="408" class="dim" font-size="12">Pelaksanaan</text>
+    <text x="948" y="408" class="val" font-size="12" text-anchor="end">15 Sep 2026</text>
+    <text x="690" y="436" class="dim" font-size="12">Tantangan inovasi panel surya</text>
+    <text x="690" y="452" class="dim" font-size="12">untuk pelajar &amp; mahasiswa.</text>
+    <rect x="690" y="466" width="60" height="20" rx="10" fill="#1e2230"/>
+    <text x="720" y="480" class="chip" text-anchor="middle" font-size="10">PLTS</text>
+    <rect x="756" y="466" width="90" height="20" rx="10" fill="#1e2230"/>
+    <text x="801" y="480" class="chip" text-anchor="middle" font-size="10">panel surya</text>
+    <text x="690" y="504" class="dim" font-size="11">KabarLomba</text>
+    <text x="948" y="504" font-size="12" fill="#818cf8" text-anchor="end" font-weight="700">Buka &#8594;</text>
+  </g>
+
+  <text x="500" y="600" text-anchor="middle" class="dim" font-size="12">Ilustrasi tampilan &#183; render sesungguhnya bisa dicoba langsung di viewer.html</text>
+</svg>

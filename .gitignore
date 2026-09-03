@@ -1,0 +1,18 @@
+# Byte-compiled / cache Python
+__pycache__/
+*.pyc
+
+# Data pribadi & runtime — JANGAN pernah commit
+wa_config.yaml
+wa_sent_history.json
+output/*
+!output/.gitkeep
+
+# Session Instagram (kalau ada) — berisi cookie login
+*.session
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
