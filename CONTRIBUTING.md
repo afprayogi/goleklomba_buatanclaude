@@ -53,9 +53,13 @@ WhatsApp adalah data pribadi. Sensor dulu nomornya kalau memang perlu ditunjukka
   khusus per situs).
 - Memperbaiki pola tanggal Bahasa Indonesia yang belum terbaca (`BULAN_PATTERN`,
   `DATE_RANGE_TAIL_RE`, dll di `cari_lomba.py`).
-- Menambah fitur kecil di [`viewer.html`](viewer.html) — semuanya vanilla
+- Menambah fitur kecil di [`index.html`](index.html) — semuanya vanilla
   HTML/CSS/JS tanpa build step, jadi cukup edit filenya langsung dan refresh
   browser untuk lihat hasilnya.
+- Memperbaiki/menambah logika di [`lib/lomba-core.js`](lib/lomba-core.js) —
+  dipakai oleh endpoint server [`api/scan.js`](api/scan.js). Kalau kamu ubah
+  logika filter/parsing tanggal, cek juga apakah salinannya di dalam
+  `index.html` (bagian scan Blogger browser) perlu diselaraskan.
 
 ## Kode etik
 

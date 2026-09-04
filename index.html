@@ -3,27 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cari Lomba — Viewer</title>
+<meta name="description" content="Cari otomatis info lomba renewable energy, teknik elektro, dan inovasi teknologi — lengkap dengan deadline pendaftaran.">
+<title>Cari Lomba</title>
 <style>
   :root{
     --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef0f6; --border:#e2e5ee;
     --text:#1c1f2b; --text-dim:#6b7080; --accent:#4f46e5; --accent-2:#7c3aed;
     --green:#16a34a; --amber:#d97706; --red:#dc2626; --shadow:0 1px 3px rgba(20,20,40,.06),0 8px 24px rgba(20,20,40,.05);
+    --skeleton:#e7e9f2;
   }
   [data-theme="dark"]{
     --bg:#0f1117; --surface:#171a23; --surface-2:#1e2230; --border:#2a2f3d;
     --text:#e9eaf0; --text-dim:#9498a8; --accent:#818cf8; --accent-2:#c084fc;
     --green:#4ade80; --amber:#fbbf24; --red:#f87171; --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    --skeleton:#232838;
   }
   *{box-sizing:border-box;}
   body{
     margin:0; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    min-height:100vh;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
   }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
   header{
     background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    color:#fff; padding:28px 20px 60px; position:relative; overflow:hidden;
+    color:#fff; padding:26px 20px 58px; position:relative; overflow:hidden;
   }
   header::after{
     content:""; position:absolute; inset:0;
@@ -31,63 +38,84 @@
   }
   .header-inner{max-width:1100px; margin:0 auto; position:relative; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
   h1{margin:0; font-size:1.6rem; display:flex; align-items:center; gap:10px;}
-  header p{margin:6px 0 0; opacity:.92; font-size:.92rem; max-width:60ch;}
-  header p.scan-note{margin-top:4px; opacity:.8; font-size:.8rem;}
+  header p{margin:6px 0 0; opacity:.92; font-size:.92rem; max-width:62ch;}
+  .mode-badge{
+    display:inline-flex; align-items:center; gap:6px; margin-top:10px;
+    background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32);
+    padding:5px 12px; border-radius:999px; font-size:.76rem; font-weight:600;
+  }
+  .mode-dot{width:7px; height:7px; border-radius:50%; background:#4ade80; box-shadow:0 0 0 3px rgba(74,222,128,.25);}
+  .mode-dot.offline{background:#fbbf24; box-shadow:0 0 0 3px rgba(251,191,36,.25);}
   .theme-toggle{
     background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:#fff;
     border-radius:10px; padding:8px 14px; cursor:pointer; font-size:.85rem; backdrop-filter:blur(4px);
+    flex-shrink:0;
   }
   .theme-toggle:hover{background:rgba(255,255,255,.28);}
 
-  main{max-width:1100px; margin:-38px auto 60px; padding:0 20px;}
+  main{max-width:1100px; margin:-34px auto 60px; padding:0 20px;}
 
   .panel{
     background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:20px;
+    box-shadow:var(--shadow); padding:20px 22px; margin-bottom:20px;
   }
-  .load-row{display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .scan-actions{display:flex; flex-wrap:wrap; gap:10px;}
   .btn{
     border:1px solid var(--border); background:var(--surface-2); color:var(--text);
-    padding:9px 16px; border-radius:10px; cursor:pointer; font-size:.88rem; font-weight:600;
-    transition:transform .08s ease, background .15s ease;
+    padding:10px 16px; border-radius:10px; cursor:pointer; font-size:.88rem; font-weight:600;
+    transition:transform .08s ease, background .15s ease, box-shadow .15s ease;
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
   }
   .btn:hover{transform:translateY(-1px);}
-  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
-  .btn.scan{background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; color:#fff;}
-  .btn.danger{color:var(--red); border-color:var(--red);}
+  .btn:active{transform:translateY(0);}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; color:#fff; box-shadow:0 4px 14px rgba(124,58,237,.28);}
+  .btn.ghost{background:transparent;}
+  .btn.danger{color:var(--red); border-color:var(--red); background:transparent;}
+  .btn.small{padding:7px 12px; font-size:.8rem;}
   .btn:disabled{opacity:.55; cursor:not-allowed; transform:none;}
   input[type=file]{display:none;}
-  .meta-line{color:var(--text-dim); font-size:.82rem; margin-top:10px;}
-  .divider-row{display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--text-dim); font-size:.78rem;}
+
+  .scan-hint{color:var(--text-dim); font-size:.78rem; margin-top:8px; line-height:1.5;}
+  .scan-hint b{color:var(--text);}
+
+  .divider-row{display:flex; align-items:center; gap:10px; margin:16px 0; color:var(--text-dim); font-size:.76rem;}
   .divider-row::before, .divider-row::after{content:""; flex:1; height:1px; background:var(--border);}
+
   .scan-log{
     display:none; margin-top:10px; background:var(--surface-2); border:1px solid var(--border);
     border-radius:10px; padding:10px 12px; font-size:.78rem; color:var(--text-dim);
     max-height:140px; overflow-y:auto; font-family:ui-monospace,Consolas,monospace; white-space:pre-line;
   }
-  .progress-bar{height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin-top:8px; display:none;}
+  .progress-bar{height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin-top:10px; display:none;}
   .progress-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .2s ease;}
+  .progress-bar-fill.indeterminate{width:40% !important; animation:indeterminate 1.1s ease-in-out infinite;}
+  @keyframes indeterminate{0%{margin-left:-40%;}100%{margin-left:100%;}}
 
-  .filters{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
+  .meta-line{color:var(--text-dim); font-size:.82rem; margin-top:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+
+  .filters{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;}
   .filters input[type=text], .filters select{
     background:var(--surface-2); border:1px solid var(--border); color:var(--text);
     padding:9px 12px; border-radius:10px; font-size:.88rem; outline:none;
   }
   .filters input[type=text]{flex:1; min-width:200px;}
+  .filters select{cursor:pointer;}
 
   .stats{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
   .stat{
-    flex:1; min-width:140px; background:var(--surface); border:1px solid var(--border);
+    flex:1; min-width:130px; background:var(--surface); border:1px solid var(--border);
     border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);
   }
   .stat .num{font-size:1.5rem; font-weight:700;}
-  .stat .lbl{color:var(--text-dim); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em;}
+  .stat .lbl{color:var(--text-dim); font-size:.76rem; text-transform:uppercase; letter-spacing:.04em;}
 
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
   .card{
     background:var(--surface); border:1px solid var(--border); border-radius:16px;
     padding:16px 18px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+    transition:transform .12s ease, box-shadow .12s ease;
   }
+  .card:hover{transform:translateY(-2px); box-shadow:0 4px 10px rgba(20,20,40,.08),0 14px 30px rgba(20,20,40,.08);}
   .card-top{display:flex; justify-content:space-between; gap:8px; align-items:flex-start;}
   .badge{
     font-size:.7rem; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap;
@@ -110,12 +138,61 @@
   .open-link{font-size:.82rem; font-weight:700; color:var(--accent); text-decoration:none;}
   .open-link:hover{text-decoration:underline;}
 
-  .empty{
-    text-align:center; padding:60px 20px; color:var(--text-dim);
+  /* skeleton loading */
+  .skel-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px;}
+  .skel-line{height:12px; border-radius:6px; background:var(--skeleton); margin-bottom:10px; overflow:hidden; position:relative;}
+  .skel-line::after{
+    content:""; position:absolute; inset:0; transform:translateX(-100%);
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation:shimmer 1.4s infinite;
   }
-  .empty .big{font-size:2.4rem; margin-bottom:8px;}
-  footer{text-align:center; color:var(--text-dim); font-size:.78rem; padding:20px; opacity:.8;}
+  [data-theme="dark"] .skel-line::after{ background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); }
+  @keyframes shimmer{100%{transform:translateX(100%);}}
+
+  .empty{text-align:center; padding:56px 20px; color:var(--text-dim);}
+  .empty .big{font-size:2.6rem; margin-bottom:10px;}
+  .empty .cta{margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+  footer{text-align:center; color:var(--text-dim); font-size:.78rem; padding:24px 20px; opacity:.85;}
   footer a{color:var(--accent);}
+
+  /* toasts */
+  .toast-wrap{position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:1000; max-width:min(360px, calc(100vw - 32px));}
+  .toast{
+    background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:12px;
+    padding:12px 14px; box-shadow:var(--shadow); font-size:.85rem; display:flex; gap:10px; align-items:flex-start;
+    animation:toast-in .18s ease;
+  }
+  .toast.success{border-color:var(--green);}
+  .toast.error{border-color:var(--red);}
+  @keyframes toast-in{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:translateY(0);}}
+
+  /* modal */
+  .modal-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(10,10,20,.5); backdrop-filter:blur(2px);
+    align-items:center; justify-content:center; z-index:2000; padding:20px;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
+    width:100%; max-width:520px; padding:20px; max-height:85vh; overflow-y:auto;
+  }
+  .modal h2{margin:0 0 6px; font-size:1.1rem;}
+  .modal p{margin:0 0 12px; color:var(--text-dim); font-size:.85rem;}
+  .modal textarea{
+    width:100%; min-height:160px; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:10px 12px; font-family:ui-monospace,Consolas,monospace; font-size:.8rem; resize:vertical;
+  }
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:14px;}
+
+  @media (max-width: 640px){
+    header{padding:22px 16px 52px;}
+    h1{font-size:1.35rem;}
+    .scan-actions .btn{flex:1 1 100%; justify-content:center;}
+    .filters{flex-direction:column;}
+    .filters input[type=text], .filters select{width:100%;}
+    .stat{min-width:calc(50% - 6px);}
+  }
 </style>
 </head>
 <body>
@@ -123,41 +200,39 @@
 <header>
   <div class="header-inner">
     <div>
-      <h1>🏆 Cari Lomba — Viewer</h1>
-      <p>Tampilkan hasil <code>cari_lomba.py --format json</code> dalam kartu yang rapi, atau
-      <b>scan langsung dari browser</b> tanpa Python sama sekali. Semua data diproses &
-      disimpan <b>di browser kamu sendiri</b> (localStorage) — tidak ada yang dikirim ke
-      server lain selain situs sumber lomba itu sendiri.</p>
-      <p class="scan-note">🌐 Scan langsung baru mendukung sumber Blogger (KabarLomba, AjangLomba,
-      BiruLangit, InfoLombaIT, Infolomba) — Telegram &amp; Instagram diblokir CORS di browser,
-      tetap perlu <code>python cari_lomba.py</code>.</p>
+      <h1>🏆 Cari Lomba</h1>
+      <p>Info lomba <b>renewable energy, teknik elektro, otomasi &amp; inovasi teknologi</b> —
+      dicari otomatis, difilter, dan diurutkan berdasarkan deadline pendaftaran.</p>
+      <span class="mode-badge" id="modeBadge"><span class="mode-dot" id="modeDot"></span><span id="modeText">Mendeteksi mode…</span></span>
     </div>
-    <button class="theme-toggle" id="themeToggle">🌓 Ganti tema</button>
+    <button class="theme-toggle" id="themeToggle">🌓 Tema</button>
   </div>
 </header>
 
 <main>
   <div class="panel">
-    <div class="load-row">
-      <button class="btn scan" id="scanBtn">🌐 Scan Blogger Sekarang</button>
-      <button class="btn danger" id="cancelScanBtn" style="display:none;">⏹️ Batalkan scan</button>
+    <div class="scan-actions">
+      <button class="btn primary" id="serverScanBtn">🚀 Scan Semua Sumber</button>
+      <button class="btn" id="browserScanBtn">🌐 Scan Blogger (di browser)</button>
+      <button class="btn ghost" id="cancelScanBtn" style="display:none;">⏹️ Batalkan</button>
     </div>
     <div class="progress-bar" id="progressBar"><div class="progress-bar-fill" id="progressBarFill"></div></div>
     <div class="scan-log" id="scanLog"></div>
+    <div class="scan-hint" id="scanHint"></div>
 
-    <div class="divider-row">atau muat hasil dari python cari_lomba.py</div>
+    <div class="divider-row">atau muat hasil dari <code>python cari_lomba.py</code></div>
 
-    <div class="load-row">
-      <label class="btn primary" for="fileInput">📂 Muat file hasil.json</label>
+    <div class="scan-actions">
+      <label class="btn small" for="fileInput">📂 Muat file hasil.json</label>
       <input type="file" id="fileInput" accept="application/json,.json">
-      <button class="btn" id="pasteBtn">📋 Tempel JSON</button>
-      <button class="btn" id="reloadCacheBtn">♻️ Muat dari cache</button>
-      <button class="btn danger" id="clearBtn">🗑️ Hapus cache</button>
+      <button class="btn small" id="pasteBtn">📋 Tempel JSON</button>
+      <button class="btn small" id="reloadCacheBtn">♻️ Muat dari cache</button>
+      <button class="btn small danger" id="clearBtn">🗑️ Hapus cache</button>
     </div>
-    <div class="meta-line" id="metaLine">Belum ada data. Klik <b>Scan Blogger Sekarang</b>, atau muat file <code>output/hasil.json</code> hasil dari <code>python cari_lomba.py --format json --output output/hasil.json</code>.</div>
+    <div class="meta-line" id="metaLine">Belum ada data. Klik <b>Scan Semua Sumber</b> untuk mulai.</div>
 
     <div class="filters">
-      <input type="text" id="searchInput" placeholder="Cari judul / keyword...">
+      <input type="text" id="searchInput" placeholder="🔍 Cari judul / keyword...">
       <select id="categoryFilter"><option value="">Semua kategori</option></select>
       <select id="statusFilter">
         <option value="">Semua status</option>
@@ -186,15 +261,43 @@
     <div class="empty">
       <div class="big">🔍</div>
       <div>Belum ada data untuk ditampilkan.</div>
-      <div style="margin-top:6px;font-size:.85rem;">Klik <b>Muat file hasil.json</b> di atas untuk mulai.</div>
+      <div class="cta">
+        <button class="btn primary small" id="emptyServerScanBtn">🚀 Scan Semua Sumber</button>
+        <button class="btn small" id="emptyDemoBtn">👀 Lihat contoh dulu</button>
+      </div>
     </div>
   </div>
 </main>
 
 <footer>
-  Dibuat untuk proyek <a href="https://github.com/" target="_blank" rel="noopener">Cari Lomba</a> ·
-  Berjalan 100% di browser, tanpa server, tanpa tracking.
+  <a href="https://github.com/afprayogi/goleklomba_buatanclaude" target="_blank" rel="noopener">Cari Lomba</a> ·
+  <span id="footerMode">memuat…</span> · data tersimpan lokal di browser kamu, bukan di server manapun.
 </footer>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<div class="modal-backdrop" id="pasteModalBackdrop">
+  <div class="modal">
+    <h2>📋 Tempel JSON</h2>
+    <p>Tempel isi JSON hasil <code>cari_lomba.py --format json</code> (atau dari <code>demo/hasil-contoh.json</code>) di bawah ini.</p>
+    <textarea id="pasteTextarea" placeholder="[ { &quot;title&quot;: ... } ]"></textarea>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="pasteCancelBtn">Batal</button>
+      <button class="btn primary small" id="pasteConfirmBtn">Muat data</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="confirmModalBackdrop">
+  <div class="modal">
+    <h2 id="confirmTitle">Konfirmasi</h2>
+    <p id="confirmBody"></p>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="confirmCancelBtn">Batal</button>
+      <button class="btn danger small" id="confirmOkBtn">Ya, lanjutkan</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -202,33 +305,90 @@
   var STORAGE_KEY = "cari-lomba:data";
   var STORAGE_META_KEY = "cari-lomba:meta";
   var THEME_KEY = "cari-lomba:theme";
+  // Anggap "mode lokal" (tanpa /api/scan) untuk protokol apa pun selain http/https —
+  // mencakup file:// (klik dua kali) maupun konteks lain yang tidak punya server.
+  var IS_FILE_PROTOCOL = !/^https?:$/.test(location.protocol);
 
-  var els = {
-    fileInput: document.getElementById("fileInput"),
-    pasteBtn: document.getElementById("pasteBtn"),
-    reloadCacheBtn: document.getElementById("reloadCacheBtn"),
-    clearBtn: document.getElementById("clearBtn"),
-    metaLine: document.getElementById("metaLine"),
-    searchInput: document.getElementById("searchInput"),
-    categoryFilter: document.getElementById("categoryFilter"),
-    statusFilter: document.getElementById("statusFilter"),
-    sortSelect: document.getElementById("sortSelect"),
-    stats: document.getElementById("stats"),
-    statTotal: document.getElementById("statTotal"),
-    statOpen: document.getElementById("statOpen"),
-    statSoon: document.getElementById("statSoon"),
-    statClosed: document.getElementById("statClosed"),
-    statUnknown: document.getElementById("statUnknown"),
-    content: document.getElementById("content"),
-    themeToggle: document.getElementById("themeToggle"),
-    scanBtn: document.getElementById("scanBtn"),
-    cancelScanBtn: document.getElementById("cancelScanBtn"),
-    progressBar: document.getElementById("progressBar"),
-    progressBarFill: document.getElementById("progressBarFill"),
-    scanLog: document.getElementById("scanLog"),
-  };
+  var els = {};
+  ["fileInput","pasteBtn","reloadCacheBtn","clearBtn","metaLine","searchInput","categoryFilter",
+   "statusFilter","sortSelect","stats","statTotal","statOpen","statSoon","statClosed","statUnknown",
+   "content","themeToggle","serverScanBtn","browserScanBtn","cancelScanBtn","progressBar",
+   "progressBarFill","scanLog","scanHint","modeBadge","modeDot","modeText","footerMode","toastWrap",
+   "pasteModalBackdrop","pasteTextarea","pasteCancelBtn","pasteConfirmBtn",
+   "confirmModalBackdrop","confirmTitle","confirmBody","confirmCancelBtn","confirmOkBtn",
+   "emptyServerScanBtn","emptyDemoBtn"
+  ].forEach(function(id){ els[id] = document.getElementById(id); });
 
   var currentData = [];
+
+  // ---------- mode indikator ----------
+  if(IS_FILE_PROTOCOL){
+    els.modeDot.classList.add("offline");
+    els.modeText.textContent = "Mode lokal (file://) — Scan Semua Sumber butuh web server";
+    els.footerMode.textContent = "mode lokal";
+    els.serverScanBtn.disabled = true;
+    els.serverScanBtn.title = "Buka halaman ini lewat server (mis. deploy ke Vercel, atau 'vercel dev') untuk memakai fitur ini.";
+  } else {
+    els.modeText.textContent = "Mode web — semua sumber (Blogger + Telegram) tersedia";
+    els.footerMode.textContent = "berjalan sebagai web app";
+  }
+
+  // ---------- toast ----------
+  function showToast(message, type){
+    var el = document.createElement("div");
+    el.className = "toast" + (type ? " " + type : "");
+    el.innerHTML = (type === "error" ? "⚠️ " : type === "success" ? "✅ " : "ℹ️ ") + escapeHtml(message);
+    els.toastWrap.appendChild(el);
+    setTimeout(function(){
+      el.style.opacity = "0";
+      el.style.transition = "opacity .25s ease";
+      setTimeout(function(){ el.remove(); }, 260);
+    }, 5000);
+  }
+
+  // ---------- modal: konfirmasi ----------
+  function askConfirm(title, body){
+    return new Promise(function(resolve){
+      els.confirmTitle.textContent = title;
+      els.confirmBody.textContent = body;
+      els.confirmModalBackdrop.classList.add("open");
+      function cleanup(result){
+        els.confirmModalBackdrop.classList.remove("open");
+        els.confirmOkBtn.removeEventListener("click", onOk);
+        els.confirmCancelBtn.removeEventListener("click", onCancel);
+        resolve(result);
+      }
+      function onOk(){ cleanup(true); }
+      function onCancel(){ cleanup(false); }
+      els.confirmOkBtn.addEventListener("click", onOk);
+      els.confirmCancelBtn.addEventListener("click", onCancel);
+    });
+  }
+
+  // ---------- modal: tempel JSON ----------
+  els.pasteBtn.addEventListener("click", function(){
+    els.pasteTextarea.value = "";
+    els.pasteModalBackdrop.classList.add("open");
+    els.pasteTextarea.focus();
+  });
+  els.pasteCancelBtn.addEventListener("click", function(){
+    els.pasteModalBackdrop.classList.remove("open");
+  });
+  els.pasteConfirmBtn.addEventListener("click", function(){
+    var text = els.pasteTextarea.value.trim();
+    if(!text) return;
+    try {
+      var json = JSON.parse(text);
+      setData(json, "teks yang ditempel");
+      els.pasteModalBackdrop.classList.remove("open");
+      showToast(json.length + " lomba dimuat dari teks yang ditempel.", "success");
+    } catch(err){
+      showToast("JSON tidak valid: " + err.message, "error");
+    }
+  });
+  [els.pasteModalBackdrop, els.confirmModalBackdrop].forEach(function(bd){
+    bd.addEventListener("click", function(e){ if(e.target === bd) bd.classList.remove("open"); });
+  });
 
   // ---------- tema ----------
   function applyTheme(mode){
@@ -325,11 +485,19 @@
         (item.snippet ? '<div class="snippet">'+escapeHtml(item.snippet)+'</div>' : '') +
         (kwList.length ? '<div class="tags">'+kwList.map(function(k){return '<span class="tag">'+escapeHtml(k)+'</span>';}).join("")+'</div>' : '') +
         '<div class="card-footer">' +
-          '<span class="source">'+escapeHtml(item.source||"")+'</span>' +
+          '<span class="source">'+escapeHtml(item.source||"")+(item.also_seen_on ? " +" + item.also_seen_on.split(",").filter(Boolean).length : "")+'</span>' +
           '<a class="open-link" href="'+escapeHtml(item.link||"#")+'" target="_blank" rel="noopener">Buka &rarr;</a>' +
         '</div>' +
       '</div>'
     );
+  }
+
+  function skeletonHtml(n){
+    var one = '<div class="skel-card"><div class="skel-line" style="width:40%"></div>' +
+      '<div class="skel-line" style="width:85%;height:18px"></div>' +
+      '<div class="skel-line" style="width:60%"></div><div class="skel-line" style="width:70%"></div>' +
+      '<div class="skel-line" style="width:50%"></div></div>';
+    return '<div class="grid">' + one.repeat(n) + '</div>';
   }
 
   function applyFiltersAndRender(){
@@ -365,7 +533,16 @@
     renderStats(currentData);
 
     if(!filtered.length){
-      els.content.innerHTML = '<div class="empty"><div class="big">🕵️</div><div>Tidak ada lomba yang cocok dengan filter ini.</div></div>';
+      var noDataAtAll = !currentData.length;
+      els.content.innerHTML = noDataAtAll
+        ? '<div class="empty"><div class="big">🔍</div><div>Belum ada data untuk ditampilkan.</div>' +
+          '<div class="cta"><button class="btn primary small" id="emptyServerScanBtn2">🚀 Scan Semua Sumber</button>' +
+          '<button class="btn small" id="emptyDemoBtn2">👀 Lihat contoh dulu</button></div></div>'
+        : '<div class="empty"><div class="big">🕵️</div><div>Tidak ada lomba yang cocok dengan filter ini.</div></div>';
+      var b2 = document.getElementById("emptyServerScanBtn2");
+      if(b2) b2.addEventListener("click", function(){ if(!els.serverScanBtn.disabled) runServerScan(); });
+      var d2 = document.getElementById("emptyDemoBtn2");
+      if(d2) d2.addEventListener("click", loadDemo);
       return;
     }
     els.content.innerHTML = '<div class="grid">' + filtered.map(cardHtml).join("") + '</div>';
@@ -377,7 +554,7 @@
     populateCategoryFilter(currentData);
     applyFiltersAndRender();
     var now = new Date().toLocaleString("id-ID");
-    els.metaLine.textContent = currentData.length + " lomba dimuat dari " + sourceLabel + " · disimpan ke cache browser pada " + now;
+    els.metaLine.innerHTML = '<b>' + currentData.length + '</b> lomba dimuat dari ' + escapeHtml(sourceLabel) + ' · disimpan ke cache browser pada ' + escapeHtml(now);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
       localStorage.setItem(STORAGE_META_KEY, JSON.stringify({loadedAt: now, source: sourceLabel, count: currentData.length}));
@@ -395,13 +572,26 @@
         populateCategoryFilter(currentData);
         applyFiltersAndRender();
         var m = meta ? JSON.parse(meta) : null;
-        els.metaLine.textContent = currentData.length + " lomba (dari cache browser" +
-          (m && m.loadedAt ? ", terakhir dimuat " + m.loadedAt : "") + ")";
+        els.metaLine.innerHTML = '<b>' + currentData.length + '</b> lomba (dari cache browser' +
+          (m && m.loadedAt ? ", terakhir dimuat " + escapeHtml(m.loadedAt) : "") + ')';
         return true;
       }
     } catch(e){ console.warn(e); }
     return false;
   }
+
+  async function loadDemo(){
+    try {
+      var r = await fetch("demo/hasil-contoh.json");
+      var json = await r.json();
+      setData(json, "demo/hasil-contoh.json (contoh)");
+      showToast("Contoh data dimuat. Coba filter & scan sungguhan kapan saja.", "success");
+    } catch(e){
+      showToast("Gagal memuat contoh: " + e.message, "error");
+    }
+  }
+  els.emptyServerScanBtn.addEventListener("click", function(){ if(!els.serverScanBtn.disabled) runServerScan(); });
+  els.emptyDemoBtn.addEventListener("click", loadDemo);
 
   els.fileInput.addEventListener("change", function(e){
     var file = e.target.files && e.target.files[0];
@@ -411,42 +601,34 @@
       try {
         var json = JSON.parse(evt.target.result);
         setData(json, "file “" + file.name + "”");
+        showToast(json.length + " lomba dimuat dari " + file.name, "success");
       } catch(err){
-        alert("File bukan JSON valid: " + err.message);
+        showToast("File bukan JSON valid: " + err.message, "error");
       }
     };
     reader.readAsText(file);
     e.target.value = "";
   });
 
-  els.pasteBtn.addEventListener("click", function(){
-    var text = prompt("Tempel isi JSON hasil cari_lomba.py di sini:");
-    if(!text) return;
-    try {
-      var json = JSON.parse(text);
-      setData(json, "teks yang ditempel");
-    } catch(err){
-      alert("JSON tidak valid: " + err.message);
-    }
-  });
-
   els.reloadCacheBtn.addEventListener("click", function(){
     if(!loadFromCacheIfAny()){
-      alert("Belum ada data tersimpan di cache browser ini.");
+      showToast("Belum ada data tersimpan di cache browser ini.", "error");
     }
   });
 
-  els.clearBtn.addEventListener("click", function(){
-    if(!confirm("Hapus data lomba yang tersimpan di cache browser ini?")) return;
+  els.clearBtn.addEventListener("click", async function(){
+    var ok = await askConfirm("Hapus cache?", "Data lomba yang tersimpan di cache browser ini akan dihapus. Tindakan ini tidak memengaruhi situs sumber atau perangkat lain.");
+    if(!ok) return;
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_META_KEY);
     } catch(e){}
     currentData = [];
     els.categoryFilter.innerHTML = '<option value="">Semua kategori</option>';
-    els.metaLine.textContent = "Cache dihapus. Belum ada data. Muat file hasil.json untuk mulai lagi.";
+    els.metaLine.textContent = "Cache dihapus. Belum ada data.";
     els.stats.style.display = "none";
-    els.content.innerHTML = '<div class="empty"><div class="big">🔍</div><div>Belum ada data untuk ditampilkan.</div></div>';
+    applyFiltersAndRender();
+    showToast("Cache dihapus.", "success");
   });
 
   [els.searchInput, els.categoryFilter, els.statusFilter, els.sortSelect].forEach(function(el){
@@ -455,16 +637,106 @@
   });
 
   // ==================================================================
-  // ---------- scan Blogger langsung dari browser (JSONP) ----------
-  // Port dari cari_lomba.py. Hanya sumber Blogger yang bisa di-scan dari
-  // browser (endpoint alt=json-in-script memang didesain untuk dipanggil
-  // lintas-origin lewat <script> tag, jadi tidak kena CORS). Telegram dan
-  // Instagram TIDAK mengizinkan cross-origin request dari browser sama
-  // sekali — sumber itu tetap wajib lewat "python cari_lomba.py".
+  // ---------- 🚀 Scan Semua Sumber (server, /api/scan) ----------
+  // Jalan di Node (server), bukan browser — jadi Telegram ikut ke-scan
+  // (tidak diblokir CORS seperti kalau dari browser). Lihat api/scan.js
+  // dan lib/lomba-core.js. Hanya tersedia kalau halaman ini dibuka lewat
+  // web server (bukan file:// lokal) — misalnya setelah deploy ke Vercel.
+  // ==================================================================
+
+  var SERVER_STATUS_MESSAGES = [
+    "Menghubungi situs sumber lomba…",
+    "Membaca postingan terbaru…",
+    "Memfilter berdasarkan keyword…",
+    "Mengenali tanggal deadline…",
+    "Menggabungkan lomba yang duplikat…",
+    "Hampir selesai…",
+  ];
+  var serverScanRunning = false;
+  var serverScanAbort = null;
+
+  function setScanButtonsBusy(busy, label){
+    els.serverScanBtn.disabled = busy || IS_FILE_PROTOCOL;
+    els.browserScanBtn.disabled = busy;
+    if(busy){
+      els.cancelScanBtn.style.display = "inline-flex";
+    } else {
+      els.cancelScanBtn.style.display = "none";
+    }
+  }
+
+  async function runServerScan(){
+    if(serverScanRunning || IS_FILE_PROTOCOL) return;
+    serverScanRunning = true;
+    setScanButtonsBusy(true);
+    els.serverScanBtn.textContent = "⏳ Sedang scan…";
+    els.scanLog.style.display = "none";
+    els.progressBar.style.display = "block";
+    els.progressBarFill.classList.add("indeterminate");
+    els.scanHint.textContent = "";
+    els.content.innerHTML = skeletonHtml(6);
+
+    var startedAt = Date.now();
+    var msgIdx = 0;
+    els.scanHint.textContent = SERVER_STATUS_MESSAGES[0];
+    var msgTimer = setInterval(function(){
+      msgIdx = (msgIdx + 1) % SERVER_STATUS_MESSAGES.length;
+      var elapsed = Math.round((Date.now() - startedAt) / 1000);
+      els.scanHint.textContent = SERVER_STATUS_MESSAGES[msgIdx] + " (" + elapsed + "s)";
+    }, 1800);
+
+    serverScanAbort = new AbortController();
+    try {
+      var resp = await fetch("/api/scan", { signal: serverScanAbort.signal });
+      if(!resp.ok){
+        var errBody = await resp.json().catch(function(){ return {}; });
+        throw new Error(errBody.error || ("HTTP " + resp.status));
+      }
+      var result = await resp.json();
+      setData(result.items, "scan server (Blogger + Telegram)");
+      var okCount = (result.sourcesOk || []).length;
+      var failCount = (result.sourcesFailed || []).length;
+      var summary = okCount + " sumber berhasil";
+      if(failCount) summary += ", " + failCount + " sumber gagal/lambat (dilewati)";
+      els.scanHint.textContent = summary + ".";
+      showToast(result.items.length + " lomba ditemukan dari " + okCount + " sumber.", "success");
+      if(failCount){
+        els.scanLog.style.display = "block";
+        els.scanLog.textContent = result.sourcesFailed.map(function(f){ return "[!] " + f.source + ": " + f.error; }).join("\n");
+      }
+    } catch(e){
+      if(e.name === "AbortError"){
+        showToast("Scan dibatalkan.", "");
+      } else {
+        showToast("Scan server gagal: " + e.message, "error");
+        els.scanHint.textContent = "Gagal. Coba lagi, atau pakai 'Scan Blogger (di browser)' sebagai cadangan.";
+      }
+      if(!currentData.length) loadFromCacheIfAny() || (els.content.innerHTML = '<div class="empty"><div class="big">😕</div><div>Scan belum berhasil. Coba lagi sebentar lagi.</div></div>');
+      else applyFiltersAndRender();
+    } finally {
+      clearInterval(msgTimer);
+      serverScanRunning = false;
+      serverScanAbort = null;
+      setScanButtonsBusy(false);
+      els.serverScanBtn.textContent = "🚀 Scan Semua Sumber";
+      els.progressBarFill.classList.remove("indeterminate");
+      els.progressBar.style.display = "none";
+    }
+  }
+
+  els.serverScanBtn.addEventListener("click", runServerScan);
+
+  // ==================================================================
+  // ---------- 🌐 Scan Blogger di browser (JSONP, tanpa server) ----------
+  // Port dari cari_lomba.py. Hanya sumber Blogger yang bisa di-scan
+  // langsung dari browser (endpoint alt=json-in-script memang didesain
+  // untuk dipanggil lintas-origin lewat <script> tag, jadi tidak kena
+  // CORS). Telegram & Instagram tetap wajib lewat "Scan Semua Sumber"
+  // (server) atau "python cari_lomba.py".
   //
-  // Daftar sumber & keyword di bawah ini adalah SALINAN dari config.yaml.
-  // Kalau kamu mengubah config.yaml, perbarui juga salinan ini secara
-  // manual supaya hasil scan langsung tetap sinkron.
+  // Daftar sumber & keyword di bawah ini adalah SALINAN dari config.yaml
+  // (dan dari lib/lomba-core.js). Kalau kamu mengubah config.yaml,
+  // perbarui juga salinan ini secara manual.
   // ==================================================================
 
   var DEFAULT_CONFIG = {
@@ -702,7 +974,7 @@
   }
 
   var scanCancelled = false;
-  var scanRunning = false;
+  var browserScanRunning = false;
 
   function logScan(msg){
     els.scanLog.style.display = "block";
@@ -712,6 +984,7 @@
 
   function setProgress(done, total){
     els.progressBar.style.display = "block";
+    els.progressBarFill.classList.remove("indeterminate");
     var pct = total ? Math.round((done/total)*100) : 0;
     els.progressBarFill.style.width = pct + "%";
   }
@@ -761,12 +1034,12 @@
 
   async function scanBlogger(){
     scanCancelled = false;
-    scanRunning = true;
-    els.scanBtn.disabled = true;
-    els.scanBtn.textContent = "⏳ Sedang scan...";
-    els.cancelScanBtn.style.display = "inline-block";
+    browserScanRunning = true;
+    setScanButtonsBusy(true);
+    els.browserScanBtn.textContent = "⏳ Sedang scan...";
     els.scanLog.textContent = "";
     els.scanLog.style.display = "block";
+    els.scanHint.textContent = "";
     setProgress(0, 1);
 
     var cfg = DEFAULT_CONFIG;
@@ -834,7 +1107,7 @@
 
     if(scanCancelled){
       logScan("Scan dibatalkan.");
-      finishScan();
+      finishBrowserScan();
       return;
     }
 
@@ -868,26 +1141,28 @@
     deduped.forEach(function(i){ i.also_seen_on = i.also_seen_on.join(", "); });
 
     logScan("Selesai. " + deduped.length + " lomba relevan ditemukan dari " + cfg.bloggerSites.length + " situs Blogger.");
-    setData(deduped, "scan langsung Blogger (Telegram/Instagram butuh python cari_lomba.py)");
-    finishScan();
+    setData(deduped, "scan browser Blogger-only (Telegram tidak termasuk)");
+    showToast(deduped.length + " lomba ditemukan (Blogger saja).", "success");
+    finishBrowserScan();
   }
 
-  function finishScan(){
-    scanRunning = false;
-    els.scanBtn.disabled = false;
-    els.scanBtn.textContent = "🌐 Scan Blogger Sekarang";
-    els.cancelScanBtn.style.display = "none";
+  function finishBrowserScan(){
+    browserScanRunning = false;
+    setScanButtonsBusy(false);
+    els.browserScanBtn.textContent = "🌐 Scan Blogger (di browser)";
   }
 
-  els.scanBtn.addEventListener("click", function(){
-    if(scanRunning) return;
+  els.browserScanBtn.addEventListener("click", function(){
+    if(browserScanRunning || serverScanRunning) return;
     scanBlogger().catch(function(e){
       logScan("[!] Scan gagal total: " + e.message);
-      finishScan();
+      showToast("Scan gagal: " + e.message, "error");
+      finishBrowserScan();
     });
   });
   els.cancelScanBtn.addEventListener("click", function(){
     scanCancelled = true;
+    if(serverScanAbort) serverScanAbort.abort();
     els.cancelScanBtn.disabled = true;
     setTimeout(function(){ els.cancelScanBtn.disabled = false; }, 500);
   });

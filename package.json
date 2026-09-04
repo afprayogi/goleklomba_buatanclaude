@@ -1,0 +1,10 @@
+{
+  "name": "cari-lomba",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cari info lomba renewable energy, teknik elektro, dan inovasi teknologi — web app + API serverless untuk Vercel. Tanpa dependency npm.",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}

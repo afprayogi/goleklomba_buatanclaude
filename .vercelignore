@@ -1,0 +1,20 @@
+# vercel CLI tidak membaca .gitignore saat deploy dari folder lokal — daftar
+# di bawah ini WAJIB ada supaya data pribadi tidak pernah ikut ter-upload.
+
+wa_config.yaml
+wa_sent_history.json
+output/
+*.session
+
+# Tidak relevan untuk deployment web (Python/skrip lokal only)
+__pycache__/
+*.pyc
+*.py
+requirements.txt
+kirim_info_lomba.bat
+preview_info_lomba.bat
+.claude/
+
+.git/
+.gitignore
+node_modules/

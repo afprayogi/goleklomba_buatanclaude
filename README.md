@@ -4,300 +4,374 @@
 
 <h1 align="center">🏆 Cari Lomba</h1>
 <p align="center">
-  Cari otomatis info <b>lomba renewable energy, teknik elektro, otomasi &amp; inovasi teknologi</b><br>
-  dari banyak sumber sekaligus — lengkap dengan <b>deadline pendaftaran</b> dan <b>tanggal pelaksanaan</b>.
+  Automatically find <b>renewable energy, electrical engineering, and technology innovation competitions</b><br>
+  from multiple sources at once — complete with <b>registration deadlines</b> and <b>event dates</b>.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white" alt="Node.js 18+">
+  <img src="https://img.shields.io/badge/dependencies-0-success" alt="Zero npm dependencies">
+  <img src="https://img.shields.io/badge/deploy-Vercel-000000?logo=vercel&logoColor=white" alt="Deploy on Vercel">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="License MIT">
-  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280" alt="Platform">
-  <img src="https://img.shields.io/badge/UI-HTML%20%2B%20browser%20scan-7c3aed" alt="HTML viewer with in-browser scan">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs Welcome">
-  <img src="https://img.shields.io/badge/Maintained%3F-yes-success" alt="Maintained">
 </p>
 
 <p align="center">
-  <a href="#-fitur">Fitur</a> ·
-  <a href="#%EF%B8%8F-tampilan-viewerhtml">Tampilan</a> ·
-  <a href="#-instalasi">Instalasi</a> ·
-  <a href="#-cara-pakai">Cara Pakai</a> ·
-  <a href="#-privasi--keamanan-data">Privasi</a> ·
-  <a href="#-kontribusi">Kontribusi</a> ·
-  <a href="#-lisensi">Lisensi</a>
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/afprayogi/goleklomba_buatanclaude">
+    <img src="https://vercel.com/button" alt="Deploy with Vercel">
+  </a>
 </p>
-
----
-
-## ✨ Fitur
-
-- 🔎 **Multi-sumber** — mengambil dari beberapa situs Blogger (KabarLomba, AjangLomba,
-  BiruLangit, InfoLombaIT, dll), channel Telegram publik, dan (opsional) Instagram.
-- 🧠 **Filter relevansi 2 tingkat** (`strong` / `weak` keyword) supaya tidak kebanjiran
-  lomba esai/menulis umum yang cuma menyinggung "teknologi" sekali secara basa-basi.
-- 📅 **Parsing tanggal otomatis** — mengerti format "Deadline: 26 Juli 2026", rentang
-  "26 Juli–9 Agustus 2026", singkatan bulan Indonesia, sampai format numerik `DD/MM/YYYY`.
-- 🔁 **Deduplikasi otomatis** — lomba yang sama dari beberapa sumber digabung jadi satu.
-- 🖥️ **Viewer HTML offline** — hasil pencarian bisa dibuka sebagai dashboard yang rapi,
-  jalan 100% di browser, **data di-cache di `localStorage`** (tidak perlu server).
-- 🌐 **Scan langsung dari browser** — `viewer.html` bisa scraping sumber Blogger
-  (KabarLomba, AjangLomba, BiruLangit, InfoLombaIT, Infolomba) sendiri tanpa
-  menjalankan Python sama sekali, langsung dari tombol di halaman.
-- 📲 **Notifikasi WhatsApp opsional** — kirim lomba baru ke WhatsApp lewat gateway lokal,
-  dengan dedup supaya tidak spam lomba yang sama dua kali.
-- 🤖 **Terintegrasi Claude Code** — bisa dijalankan lewat skill `/cari-lomba` untuk
-  dirangkum otomatis dalam bahasa biasa.
-- 🔒 **Sadar privasi** — tidak ada data pribadi (nomor WhatsApp, kredensial) yang
-  tersimpan di file contoh/template; semua data sensitif diisi lokal oleh kamu sendiri
-  dan sudah di-`.gitignore`.
-
----
-
-## 🖥️ Tampilan (`viewer.html`)
 
 <p align="center">
-  <img src="assets/preview-mockup.svg" alt="Ilustrasi tampilan viewer.html" width="85%">
+  🇬🇧 English · <a href="README.id.md">🇮🇩 Bahasa Indonesia</a>
 </p>
 
-`viewer.html` adalah dashboard statis (tanpa build step, tanpa dependency) untuk
-menampilkan hasil `cari_lomba.py --format json` dalam bentuk kartu yang enak dibaca —
-dan sekarang juga bisa mencari sendiri lomba barunya:
-
-- 🌐 **"Scan Blogger Sekarang"** — mengambil data langsung dari situs Blogger sumber
-  lomba (lewat endpoint JSONP resmi Blogger, tanpa proxy pihak ketiga), memfilter,
-  memberi skor, mem-parsing tanggal, dan mem-dedup-nya — semua logikanya sama persis
-  dengan `cari_lomba.py`, dijalankan ulang dalam JavaScript.
-- 📂 Atau muat file `hasil.json` langsung dari file picker / tempel JSON manual —
-  berguna untuk hasil dari sumber yang **tidak bisa** di-scan browser (Telegram,
-  Instagram) karena diblokir CORS.
-- 🔍 Cari, filter per kategori (Business Plan, Poster, Hackathon/PKM, dst.), dan
-  filter per status (masih dibuka / segera tutup ≤7 hari / sudah tutup / deadline tidak diketahui).
-- 📊 Ringkasan statistik instan (total, dibuka, segera tutup, tutup, deadline tidak diketahui).
-- 💾 **Otomatis tersimpan ke cache browser (`localStorage`)** — tutup dan buka lagi
-  filenya, hasil scan/data terakhir tetap ada tanpa perlu muat ulang.
-- 🌗 Tema terang/gelap (ikut preferensi sistem, bisa di-toggle manual).
-- 🔒 **Tidak ada server perantara** — kalau kamu tidak menekan "Scan", halaman ini
-  tidak melakukan request apa pun. Saat kamu menekan "Scan", request hanya pergi ke
-  situs sumber lomba itu sendiri (bukan ke server pihak ketiga manapun).
-
-Coba langsung tanpa perlu jalankan Python — buka [`viewer.html`](viewer.html) di
-browser, lalu klik **"🌐 Scan Blogger Sekarang"**. Atau, untuk melihat contoh
-tampilannya secara instan tanpa koneksi internet sama sekali, klik **"Tempel JSON"**
-dan tempel isi [`demo/hasil-contoh.json`](demo/hasil-contoh.json).
-
-> **Keterbatasan scan browser:** hanya mencakup sumber Blogger. Telegram & Instagram
-> tetap wajib lewat `python cari_lomba.py` karena server mereka memblokir permintaan
-> lintas-origin dari browser (CORS) — tidak ada cara mengakalinya tanpa proxy pihak
-> ketiga, yang sengaja tidak dipakai proyek ini. Kalau salah satu situs Blogger lambat
-> atau tidak merespon, scan otomatis melewati sisa keyword situs itu (mirip mekanisme
-> `DeadHost` di `cari_lomba.py`) supaya tidak menggantung lama.
+<p align="center">
+  <a href="#-features">Features</a> ·
+  <a href="#%EF%B8%8F-ui-indexhtml">UI</a> ·
+  <a href="#-deploy-to-vercel">Deploy to Vercel</a> ·
+  <a href="#-installation">Installation</a> ·
+  <a href="#-usage">Usage</a> ·
+  <a href="#-privacy--data-security">Privacy</a> ·
+  <a href="#-contributing">Contributing</a> ·
+  <a href="#-license">License</a>
+</p>
 
 ---
 
-## 📦 Instalasi
+## ✨ Features
 
-**Requirement:**
+- 🚀 **Web app, ready to deploy on Vercel** — one click on the *Deploy* button above and
+  you have your own site. **Zero npm dependencies** (empty `node_modules`), so builds are
+  fast and anyone can run it.
+- 🔎 **Multiple sources** — Blogger sites (KabarLomba, AjangLomba, BiruLangit,
+  InfoLombaIT, Infolomba), public Telegram channels, and (via the CLI) optional Instagram.
+- 🌩️ **Server-side scan (Blogger + Telegram together)** — the `/api/scan` endpoint runs
+  on Node, so it's *not* limited by browser CORS restrictions. Just click one button on
+  the page — no Python install required.
+- 🧠 **Two-tier relevance filter** (`strong` / `weak` keywords) so you don't get flooded
+  with generic essay/writing competitions that only mention "technology" in passing.
+- 📅 **Automatic date parsing** — understands formats like "Deadline: 26 Juli 2026",
+  ranges like "26 Juli–9 Agustus 2026", Indonesian month abbreviations, and numeric
+  `DD/MM/YYYY` dates.
+- 🔁 **Automatic deduplication** — the same competition found across multiple sources is
+  merged into one entry.
+- 🖥️ **Modern HTML dashboard** — competition cards, category/status filters, instant
+  stats, light/dark theme, skeleton loading, toast notifications, and **caching in your
+  browser's `localStorage`** (not on any server).
+- 📲 **Optional WhatsApp notifications (CLI)** — send new competitions to WhatsApp
+  through a local gateway, with dedup so the same competition is never sent twice.
+- 🤖 **Claude Code integration** — runnable via the `/cari-lomba` skill, which summarizes
+  the results in plain language.
+- 🔒 **Privacy-conscious by design** — the server endpoint stores nothing (stateless, it
+  only forwards scan results); no personal data (WhatsApp numbers, credentials) lives in
+  the example/template files; all sensitive data is already in `.gitignore` *and*
+  `.vercelignore`.
 
-| Kebutuhan | Versi |
-|---|---|
-| Python | 3.9 atau lebih baru |
-| pip | terbaru |
-| Browser modern | untuk `viewer.html` (Chrome, Edge, Firefox, Safari) |
-| WhatsApp gateway lokal *(opsional)* | untuk fitur kirim notifikasi WA |
+---
+
+## 🖥️ UI (`index.html`)
+
+<p align="center">
+  <img src="assets/preview-mockup.svg" alt="Illustration of the index.html UI" width="85%">
+</p>
+
+`index.html` is a single-file dashboard (no framework, no build step) that becomes the
+home page once this project is deployed on Vercel — and it still works by opening it
+directly on your computer (double-click), no server needed at all. There are three ways
+to load data into it:
+
+| Button | Source | Needs a server? |
+|---|---|---|
+| 🚀 **Scan All Sources** | Blogger *and* Telegram, via `/api/scan` (Node, no CORS limits) | Yes — only active after deployment (or local `vercel dev`) |
+| 🌐 **Scan Blogger (in browser)** | Blogger only, directly from browser JavaScript (Blogger's own JSONP) | No — works even when the file is opened directly |
+| 📂 **Load file / 📋 Paste JSON** | Output of `python cari_lomba.py --format json` (Instagram included) | No |
+
+The page automatically detects its mode (see the small badge in the header: 🟢 *web
+mode* or 🟡 *local mode*) and disables whichever button isn't relevant. Other features:
+
+- 🔍 Search, filter by category (Business Plan, Poster, Hackathon/PKM, etc.), and filter
+  by status (still open / closing soon ≤7 days / closed / deadline unknown).
+- 📊 Instant summary stats, competition cards with a days-remaining indicator, and an
+  "also found on other sources" note for competitions listed on multiple sites.
+- 💀 Skeleton loading + a running status message while a server scan is in progress.
+- 💾 **Automatically cached in the browser (`localStorage`)** — close and reopen the
+  page, and your last scan results are still there.
+- 🌗 Light/dark theme (follows system preference, can be toggled manually), mobile
+  responsive.
+- 🔔 Toast and modal notifications (no more stiff browser `alert()`/`prompt()` dialogs).
+
+Haven't deployed yet? Click **"👀 See an example first"** on the empty state to load
+[`demo/hasil-contoh.json`](demo/hasil-contoh.json) instantly, no internet connection
+required.
+
+---
+
+## 🚢 Deploy to Vercel
+
+This project has **zero npm dependencies** — `npm install` finishes in seconds, so the
+Vercel build is fast too.
+
+### Option 1 — one click
+
+Click the **Deploy with Vercel** button near the top of this README, then follow the
+flow (import from your own GitHub, or fork this repo first). Vercel automatically
+detects `api/scan.js` as a Serverless Function and `index.html` as the home page — no
+extra configuration needed.
+
+### Option 2 — via CLI
 
 ```bash
-git clone <url-repo-ini>
-cd cari-lomba
-pip install -r requirements.txt
+npm i -g vercel      # once, if you've never used the Vercel CLI before
+vercel                # deploy a preview
+vercel --prod          # deploy to production
 ```
 
-Dependensi utama ([`requirements.txt`](requirements.txt)): `requests`, `beautifulsoup4`,
-`PyYAML`, `instaloader` (Instagram bersifat opsional).
+### Option 3 — try it locally before deploying
+
+```bash
+vercel dev
+```
+
+This runs `index.html` **and** `/api/scan` at `http://localhost:3000` exactly like
+production, so the **"🚀 Scan All Sources"** button is active too (unlike opening
+`index.html` directly via `file://`, which automatically restricts itself to
+browser-only mode).
+
+**Good to know:**
+
+- `api/scan.js` is set to `maxDuration: 30` seconds in [`vercel.json`](vercel.json). If
+  your Vercel plan doesn't allow that duration, lower the number or fall back to the
+  "Scan Blogger (in browser)" button.
+- `/api/scan` responses are cached on Vercel's CDN for 30 minutes
+  (`stale-while-revalidate` for 1 hour) — so repeat visitors get instant results and the
+  source sites aren't hit on every page load.
+- `.vercelignore` is already set up so `wa_config.yaml`, `wa_sent_history.json`,
+  `output/`, and Python files **never get uploaded** when deploying via the CLI from
+  your local folder (the CLI doesn't automatically respect `.gitignore`).
 
 ---
 
-## 🚀 Cara Pakai
+## 📦 Installation
 
-### 1. Jalankan pencarian (CLI)
+**Requirements:**
+
+| Requirement | Version | Used for |
+|---|---|---|
+| Node.js | 18 or newer | Web app + `/api/scan` (zero npm dependencies) |
+| Python | 3.9 or newer | CLI (`cari_lomba.py`, full Telegram+Instagram support, WhatsApp notifications) |
+| Modern browser | — | Chrome, Edge, Firefox, Safari |
+| Local WhatsApp gateway *(optional)* | — | For WhatsApp notifications |
 
 ```bash
-python cari_lomba.py                                    # tampilkan sebagai tabel di terminal
-python cari_lomba.py --days 30                           # hanya deadline 30 hari ke depan
-python cari_lomba.py --keyword "hidrogen"                 # tambah keyword filter sekali pakai
+git clone https://github.com/afprayogi/goleklomba_buatanclaude.git
+cd goleklomba_buatanclaude
+npm install                    # instant — this project has zero dependencies
+pip install -r requirements.txt   # optional, only if you want the Python CLI
+```
+
+---
+
+## 🚀 Usage
+
+### 1. Web app (Vercel) — the easiest way
+
+Open your deployed site (see [Deploy to Vercel](#-deploy-to-vercel) if you haven't yet),
+click **"🚀 Scan All Sources"**. Done — results (Blogger + Telegram) show up instantly
+and are cached in your browser.
+
+### 2. Open it directly from your computer (no server)
+
+Double-click [`index.html`](index.html). The **"🌐 Scan Blogger (in browser)"** button
+stays active (Blogger only); for full coverage, use the CLI below and load the results
+via **"📂 Load hasil.json file"**.
+
+### 3. Python CLI — the most complete results
+
+```bash
+python cari_lomba.py                                    # print as a table in the terminal
+python cari_lomba.py --days 30                           # only deadlines within the next 30 days
+python cari_lomba.py --keyword "hidrogen"                 # add a one-off keyword filter
 python cari_lomba.py --format json --output output/hasil.json
 python cari_lomba.py --format csv  --output output/hasil.csv
-python cari_lomba.py --include-closed                     # ikut tampilkan yang deadline-nya lewat
+python cari_lomba.py --include-closed                     # also show competitions with a past deadline
 ```
 
-### 2. Lihat hasilnya di dashboard HTML
+Then open [`index.html`](index.html) → click **"📂 Load hasil.json file"** → select
+`output/hasil.json` (Instagram included too, once configured).
 
-**Opsi A — tanpa Python sama sekali:** buka [`viewer.html`](viewer.html) langsung di
-browser, klik **"🌐 Scan Blogger Sekarang"**. Hasilnya otomatis tersimpan di cache
-browser untuk kunjungan berikutnya.
+### 4. Via Claude Code
 
-**Opsi B — hasil lengkap (termasuk Telegram/Instagram):**
+Type `/cari-lomba` in Claude Code (see
+[`.claude/skills/cari-lomba/SKILL.md`](.claude/skills/cari-lomba/SKILL.md)). Claude will
+run the same script, summarize the results in plain language, and can help you tweak
+keywords/sources interactively.
+
+### 5. Automatic WhatsApp notifications *(optional, CLI)*
 
 ```bash
-python cari_lomba.py --format json --output output/hasil.json
+python kirim_info_lomba.py --dry-run   # ALWAYS try this first — preview only, sends nothing
+python kirim_info_lomba.py             # actually send
 ```
 
-Lalu buka [`viewer.html`](viewer.html) → klik **"📂 Muat file hasil.json"** → pilih
-`output/hasil.json`.
-
-### 3. Lewat Claude Code
-
-Ketik `/cari-lomba` di Claude Code (lihat
-[`.claude/skills/cari-lomba/SKILL.md`](.claude/skills/cari-lomba/SKILL.md)). Claude
-akan menjalankan script yang sama, merangkum hasilnya dalam bahasa biasa, dan bisa
-bantu tweak keyword/sumber secara interaktif.
-
-### 4. Kirim otomatis ke WhatsApp *(opsional)*
-
-```bash
-python kirim_info_lomba.py --dry-run   # WAJIB dicoba dulu — preview, tidak mengirim apa pun
-python kirim_info_lomba.py             # kirim beneran
-```
-
-Atau double-click [`preview_info_lomba.bat`](preview_info_lomba.bat) /
-[`kirim_info_lomba.bat`](kirim_info_lomba.bat) di Windows. Detail setup gateway &
-dedup ada di bagian [Konfigurasi](#%EF%B8%8F-konfigurasi).
+Or double-click [`preview_info_lomba.bat`](preview_info_lomba.bat) /
+[`kirim_info_lomba.bat`](kirim_info_lomba.bat) on Windows. Gateway setup & dedup details
+are in the [Configuration](#%EF%B8%8F-configuration) section.
 
 ---
 
-## 🔐 Privasi & Keamanan Data
+## 🔐 Privacy & Data Security
 
-Proyek ini didesain supaya **tidak ada data pribadi yang ikut ter-share**:
+This project is designed so that **no personal data ever gets shared**:
 
-- `wa_config.yaml` (nomor WhatsApp & kredensial gateway asli kamu) **sudah masuk
-  `.gitignore`** — tidak akan pernah ter-commit ke git secara tidak sengaja.
-- Yang di-commit ke repo hanyalah [`wa_config.example.yaml`](wa_config.example.yaml),
-  template kosong berisi placeholder (`628xxxxxxxxxx@s.whatsapp.net`), bukan nomor asli.
-- WhatsApp gateway yang dipakai **berjalan lokal di komputer kamu sendiri**
-  (`http://localhost:3000`), bukan layanan pihak ketiga — kredensialnya tidak pernah
-  keluar dari komputer kamu.
-- `wa_sent_history.json` (riwayat kirim, berisi tautan lomba) dan folder `output/`
-  juga di-`.gitignore` karena isinya data hasil run pribadi kamu.
-- Instagram **tidak pernah** menangani password kamu — login dilakukan manual lewat
-  `instaloader --login=...` di terminal kamu sendiri.
-- `viewer.html` tidak melakukan request apa pun secara default. Saat kamu menekan
-  **"Scan Blogger Sekarang"**, permintaan hanya pergi langsung ke situs sumber lomba
-  (KabarLomba, AjangLomba, dll) — **tidak lewat server/proxy pihak ketiga manapun**.
-  Data hasilnya cuma tersimpan di `localStorage` perangkat kamu, tidak dikirim ke mana pun.
+- `wa_config.yaml` (your real WhatsApp number & gateway credentials) **is already in
+  `.gitignore` and `.vercelignore`** — it will never be accidentally committed to git or
+  uploaded to Vercel.
+- The only file committed to the repo is
+  [`wa_config.example.yaml`](wa_config.example.yaml), an empty template with a
+  placeholder (`628xxxxxxxxxx@s.whatsapp.net`), not a real number.
+- The WhatsApp gateway used **runs locally on your own computer**
+  (`http://localhost:3000`), not a third-party service — its credentials never leave
+  your computer, and it has nothing to do with the Vercel deployment.
+- `wa_sent_history.json` (send history) and the `output/` folder are also in
+  `.gitignore` + `.vercelignore` since they contain your personal run data.
+- Instagram **never** handles your password — login is done manually via
+  `instaloader --login=...` in your own terminal (a CLI-only feature, not part of the
+  Vercel deployment).
+- **`/api/scan` is stateless** — there's no database, and it doesn't store who made a
+  request or what they searched for. It only forwards (and briefly CDN-caches) scan
+  results from public sites, whose data is already public.
+- `index.html` doesn't send anything to any third party besides (a) `/api/scan` on your
+  own Vercel domain, or (b) the competition source sites when the "Scan Blogger (in
+  browser)" button is pressed. Displayed data is only stored in your device's
+  `localStorage`.
 
-**Sebelum push ke repo publik**, cek dulu:
+**Before pushing to a public repo / deploying from the CLI**, double-check:
 
 ```bash
-git status   # pastikan wa_config.yaml TIDAK muncul di daftar file yang akan di-commit
+git status   # make sure wa_config.yaml does NOT appear in the files to be committed
 ```
 
 ---
 
-## ⚙️ Konfigurasi
+## ⚙️ Configuration
 
-Semua sumber & keyword diatur di [`config.yaml`](config.yaml) — edit file itu, bukan
-`cari_lomba.py`, untuk menambah situs/channel/keyword baru.
+All sources & keywords for the CLI are configured in [`config.yaml`](config.yaml). For
+the web app (`/api/scan` and "Scan Blogger in browser" mode), sources & keywords live in
+[`lib/lomba-core.js`](lib/lomba-core.js) and inside `index.html` — deliberately copied
+by hand (instead of reading `config.yaml` at runtime) so this project stays **zero
+dependency** (no extra YAML parser). If you change one, keep the other in sync.
 
-| Sumber | Cara ambil | Keterangan |
+| Source | How it's fetched | Notes |
 |---|---|---|
-| [kabarlomba.com](https://www.kabarlomba.com), [ajanglomba.com](https://www.ajanglomba.com), [birulangit.id](https://www.birulangit.id), [infolombait.com](https://www.infolombait.com), dll | API JSON bawaan Blogger (`/feeds/posts/default?q=...`) | Tidak perlu scraping HTML rapuh — resmi disediakan platform Blogger |
-| Telegram publik: `@informasilomba`, `@edulantern`, `@infolomba_ofc`, dll | `t.me/s/<channel>` (halaman preview publik, tanpa login) | Tambah channel lain lewat `config.yaml` |
-| Instagram *(opsional)* | [instaloader](https://github.com/instaloader/instaloader) | Butuh login manual, berisiko kena rate-limit dari Meta |
+| [kabarlomba.com](https://www.kabarlomba.com), [ajanglomba.com](https://www.ajanglomba.com), [birulangit.id](https://www.birulangit.id), [infolombait.com](https://www.infolombait.com), etc. | Blogger's built-in JSON API (`/feeds/posts/default`) | No fragile HTML scraping — officially provided by the Blogger platform |
+| Public Telegram: `@informasilomba`, `@edulantern`, `@infolomba_ofc`, etc. | `t.me/s/<channel>` (public preview page, no login) | Works in the CLI & `/api/scan` (server); not possible from the browser (CORS) |
+| Instagram *(optional, CLI only)* | [instaloader](https://github.com/instaloader/instaloader) | Requires manual login, risks rate-limiting from Meta |
 
-### Notifikasi WhatsApp
+### WhatsApp notifications (CLI)
 
-1. Salin template: `cp wa_config.example.yaml wa_config.yaml` (sudah ada secara default).
-2. Isi `recipients.personal` / `recipients.groups` dengan nomor/grup tujuan **kamu sendiri**.
-3. Jalankan WhatsApp gateway lokal di `http://localhost:3000` (atau sesuaikan `gateway.base_url`).
-4. Selalu coba `--dry-run` dulu sebelum kirim beneran.
+1. Copy the template: `cp wa_config.example.yaml wa_config.yaml` (already present by default).
+2. Fill in `recipients.personal` / `recipients.groups` with **your own** target number(s)/group(s).
+3. Run the local WhatsApp gateway at `http://localhost:3000` (or adjust `gateway.base_url`).
+4. Always try `--dry-run` first before sending for real.
 
-Jadwalkan otomatis (mis. tiap pagi) lewat Task Scheduler Windows / `cron`:
-`python cari_lomba.py` lalu `python kirim_info_lomba.py`.
-
----
-
-## 🧠 Cara Kerja Filter Relevansi
-
-Supaya tidak kebanjiran lomba esai/menulis umum yang cuma menyebut "teknologi" atau
-"inovasi" sekali secara basa-basi, filternya dua tingkat:
-
-- **strong** — kalau salah satu muncul (mis. "elektro", "energi terbarukan", "IoT",
-  "smart grid"), lomba langsung dianggap relevan.
-- **weak** — kata umum (mis. "teknologi", "inovasi") baru dianggap sinyal relevan kalau
-  ada **≥2 kata weak berbeda** DAN **minimal satu di antaranya muncul di judul** (bukan
-  cuma di isi artikel).
-
-Hasil dari beberapa sumber yang sebenarnya lomba yang sama otomatis digabung
-(deduplikasi berdasarkan kemiripan judul & link).
+Schedule it automatically (e.g. every morning) via Windows Task Scheduler / `cron`:
+`python cari_lomba.py` then `python kirim_info_lomba.py`.
 
 ---
 
-## 📁 Struktur Proyek
+## 🧠 How the Relevance Filter Works
+
+To avoid being flooded with generic essay/writing competitions that only mention
+"technology" or "innovation" in passing, filtering happens in two tiers:
+
+- **strong** — if any of these appear (e.g. "elektro", "energi terbarukan", "IoT",
+  "smart grid"), the competition is immediately considered relevant.
+- **weak** — generic words (e.g. "teknologi", "inovasi") are only treated as a relevance
+  signal if **≥2 different weak words** appear **AND at least one of them is in the
+  title** (not just the article body).
+
+Results from multiple sources that turn out to be the same competition are automatically
+merged (deduplicated based on title similarity & link).
+
+---
+
+## 📁 Project Structure
 
 ```
 cari-lomba/
-├── cari_lomba.py             # Script utama: cari, filter, parse tanggal, dedup
-├── kirim_info_lomba.py       # Kirim lomba baru ke WhatsApp (opsional)
-├── config.yaml               # Sumber & keyword — edit di sini, bukan di .py
-├── wa_config.example.yaml    # Template config WhatsApp (aman di-commit)
-├── wa_config.yaml            # Config WhatsApp asli kamu (di-gitignore)
-├── viewer.html                # Dashboard HTML offline + cache browser
-├── demo/hasil-contoh.json    # Data contoh untuk coba viewer.html tanpa run Python
-├── output/                   # Hasil export CSV/JSON (di-gitignore)
-├── .claude/skills/cari-lomba/ # Skill Claude Code (/cari-lomba)
-├── assets/                   # Aset gambar README
+├── index.html                # Web app (dashboard + scan) — home page on Vercel
+├── api/scan.js                # Serverless Function: GET /api/scan (Blogger + Telegram)
+├── lib/lomba-core.js          # Core logic (filtering, date parsing, dedup) — used by api/scan.js
+├── vercel.json                 # Vercel config (function maxDuration, etc.)
+├── .vercelignore                # Prevents personal files from being uploaded on CLI deploy
+├── package.json                 # Zero npm dependencies — instant install
+│
+├── cari_lomba.py              # Python CLI: search, filter, parse dates, dedup (most complete)
+├── kirim_info_lomba.py        # Send new competitions to WhatsApp (optional, CLI)
+├── config.yaml                 # Sources & keywords for the CLI
 ├── requirements.txt
+│
+├── wa_config.example.yaml     # WhatsApp config template (safe to commit)
+├── wa_config.yaml              # Your real WhatsApp config (gitignored & vercelignored)
+├── demo/hasil-contoh.json     # Example data to try index.html without running anything
+├── output/                     # CLI export output (gitignored & vercelignored)
+├── .claude/skills/cari-lomba/  # Claude Code skill (/cari-lomba)
+├── assets/                      # README image assets
 ├── LICENSE
 ├── CONTRIBUTING.md
-└── README.md
+├── README.md                    # English version (this file)
+└── README.id.md                 # Indonesian version
 ```
 
 ---
 
-## ⚠️ Keterbatasan
+## ⚠️ Limitations
 
-- **Deadline tidak selalu ketemu.** Kalau tanggalnya cuma ada di gambar/infografis
-  (bukan teks), kolom deadline akan kosong — cek langsung ke link yang diberikan.
-- **Hasil antar-run bisa sedikit berbeda.** Endpoint pencarian Blogger tidak selalu
-  mengembalikan hasil identik untuk keyword umum — jalankan beberapa kali untuk
-  cakupan lebih lengkap.
-- **Instagram/X** di luar akun yang dikonfigurasi belum bisa diotomatisasi stabil
-  tanpa API berbayar.
-- **Scan langsung di `viewer.html`** adalah port JavaScript dari logika Python, tapi
-  disederhanakan: tanpa retry otomatis, timeout lebih pendek, dan deduplikasi memakai
-  perhitungan kemiripan judul yang lebih ringan (bukan `difflib` Python persis). Untuk
-  hasil paling lengkap & akurat, tetap gunakan `python cari_lomba.py`.
-
----
-
-## 🤝 Kontribusi
-
-Kontribusi apa pun — laporan bug, ide sumber/keyword baru, sampai pull request —
-sangat diterima. Baca [`CONTRIBUTING.md`](CONTRIBUTING.md) untuk panduan lengkapnya,
-termasuk area yang paling butuh bantuan.
-
-Langkah singkat:
-
-1. Fork repo ini & buat branch baru.
-2. Untuk menambah sumber/keyword, biasanya cukup edit [`config.yaml`](config.yaml) —
-   tidak perlu sentuh kode Python sama sekali.
-3. Buka Pull Request dengan penjelasan singkat kenapa perubahan itu diperlukan.
+- **Deadlines aren't always found.** If the date only appears in an image/infographic
+  (not text), the deadline field will be empty — check the given link directly.
+- **`/api/scan` fetches each site's latest posts** (rather than one request per keyword
+  like the CLI) to stay fast and light within serverless time limits. For the most
+  complete coverage (including older competitions that rarely show up in the latest
+  feed), use `python cari_lomba.py`.
+- **Instagram/X** beyond the configured accounts can't be reliably automated without a
+  paid API, and is only available via the CLI (not part of the Vercel deployment).
+- **The in-browser scan** ("Scan Blogger" mode) is a simplified JavaScript port: no
+  automatic retries, and deduplication uses a lighter title-similarity calculation
+  (not Python's exact `difflib`).
 
 ---
 
-## 📄 Lisensi
+## 🤝 Contributing
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE) — bebas dipakai, dimodifikasi,
-dan didistribusikan ulang, termasuk untuk keperluan komersial, selama menyertakan
-notice lisensi aslinya.
+Any contribution — bug reports, source/keyword ideas, or pull requests — is very
+welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full guide, including the
+areas that need the most help.
+
+Quick steps:
+
+1. Fork this repo & create a new branch.
+2. To add CLI sources/keywords, just edit [`config.yaml`](config.yaml). For the web app,
+   also keep [`lib/lomba-core.js`](lib/lomba-core.js) and `index.html` in sync.
+3. Open a Pull Request with a short explanation of why the change is needed.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) — free to use, modify, and
+redistribute, including for commercial purposes, as long as the original license notice
+is included.
 
 ---
 
 ## 🙏 Disclaimer
 
-Tool ini melakukan scraping ringan terhadap situs publik (Blogger, Telegram) yang
-memang menyediakan info lomba secara terbuka. Gunakan secara wajar (jangan jalankan
-berulang kali dalam waktu sangat singkat) supaya tidak membebani server sumbernya.
-Fitur Instagram bersifat opsional dan sepenuhnya menjadi tanggung jawab pengguna
-terkait Ketentuan Layanan Meta.
+This tool does light scraping of public sites (Blogger, Telegram) that already provide
+competition info openly. Use it reasonably so as not to burden the source sites —
+`/api/scan` responses are already cached on Vercel's CDN for 30 minutes for this reason.
+The Instagram feature is optional and fully the user's responsibility with regard to
+Meta's Terms of Service.
 
-<p align="center">Dibuat untuk membantu sesama pelajar &amp; mahasiswa menemukan info lomba lebih cepat. Selamat berkompetisi! 🚀</p>
+<p align="center">Built to help fellow students find competition info faster. Good luck out there! 🚀</p>

@@ -2,6 +2,10 @@
 __pycache__/
 *.pyc
 
+# Node / Vercel
+node_modules/
+.vercel/
+
 # Data pribadi & runtime — JANGAN pernah commit
 wa_config.yaml
 wa_sent_history.json
